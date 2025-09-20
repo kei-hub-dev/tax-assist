@@ -1,0 +1,30 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: dockerfile
+    volumes:
+      - .:/workspace:cached
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/app_development
+      RAILS_ENV: development
+      BUNDLE_PATH: /usr/local/bundle
+    depends_on:
+      - db
+    command: bash -lc "bin/rails db:prepare && bin/rails s -b 0.0.0.0"
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_development
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

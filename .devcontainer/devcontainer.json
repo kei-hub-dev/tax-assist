@@ -1,0 +1,29 @@
+{
+  "name": "rails-postgres",
+  "dockerComposeFile": [
+    "../compose.yaml"
+  ],
+  "service": "web",
+  "workspaceFolder": "/workspace",
+  "overrideCommand": true,
+  "remoteEnv": {
+    "BUNDLE_PATH": "/usr/local/bundle"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Shopify.ruby-lsp",
+        "bung87.rails",
+        "rebornix.ruby",
+        "eamodio.gitlens",
+        "EditorConfig.EditorConfig"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "rubyLsp.enabled": true
+      }
+    }
+  },
+  "postCreateCommand": "bundle install && bin/rails db:prepare",
+  "shutdownAction": "stopCompose"
+}
