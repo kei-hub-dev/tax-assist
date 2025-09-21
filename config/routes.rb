@@ -10,5 +10,5 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root to: proc { [ 200, { "Content-Type" => "text/plain" }, [ "Hello from tax-assist" ] ] }
 end
