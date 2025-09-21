@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title><%= content_for(:title) || "Tax Assist" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,9 +15,14 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application" %>
-  </head>
+</head>
 
-  <body>
+<body>
+    <% flash.each do |type, message| %>
+    <p class="flash <%= type %>"><%= message %></p>
+    <% end %>
+
     <%= yield %>
-  </body>
+</body>
+
 </html>
