@@ -1,0 +1,28 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'fly.io deploy'
+        required: false
+        default: 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      FLY_APP: tax-assist
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@v1
+
+      - name: Deploy to Fly
+        run: |
+          flyctl deploy --app "$FLY_APP" --remote-only
