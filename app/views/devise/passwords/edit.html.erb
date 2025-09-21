@@ -1,0 +1,29 @@
+<div class="auth">
+    <h1>パスワードリセット</h1>
+
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { class: "form" }, method: :put) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+    <%= f.hidden_field :reset_password_token %>
+
+    <div class="field">
+        <%= f.label :password, "新しいパスワード" %>
+        <% if @minimum_password_length %>
+        <small>(最小 <%= @minimum_password_length %> 文字)</small>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password", placeholder: "Password" %>
+    </div>
+
+    <div class="field">
+        <%= f.label :password_confirmation, "確認用パスワード" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Password" %>
+    </div>
+
+    <div class="actions">
+        <%= f.submit "更新", class: "btn" %>
+    </div>
+    <% end %>
+
+    <div class="links">
+        <%= link_to "ログインへ戻る", new_session_path(resource_name) %>
+    </div>
+</div>
