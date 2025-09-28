@@ -1,0 +1,7 @@
+<div class="page">
+  <h2>メニュー</h2>
+  <div class="auth">
+    <%= link_to "メール/パスワード変更", edit_account_path, class: "btn" %>
+    <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn" %>
+  </div>
+</div>

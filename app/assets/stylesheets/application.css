@@ -1,15 +1,149 @@
-/*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
- * vendor/assets/stylesheets directory can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
- *
- *= require_tree .
- *= require_self
- */
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+#flash-messages {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    text-align: center;
+    pointer-events: none;
+}
+
+.flash {
+    display: inline-block;
+    margin: .5rem auto;
+    padding: 8px 14px;
+    border-radius: 4px;
+    background: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    pointer-events: auto;
+}
+
+.flash.notice {
+    background: #dff0d8;
+    color: #2e7d32;
+    border-color: #bde5b8;
+}
+
+.flash.alert {
+    background: #f2dede;
+    color: #a94442;
+    border-color: #ebcccc;
+}
+
+body {
+    background: #f5f5f7;
+}
+
+body.auth-layout {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth {
+    width: min(360px, 90vw);
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+    text-align: center;
+}
+
+.auth-title {
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form .field {
+    text-align: left;
+}
+
+.form input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.actions {
+    margin-top: 12px;
+}
+
+.btn {
+    width: 100%;
+    padding: 8px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.links {
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.page {
+    max-width: 960px;
+    margin: 48px auto;
+    padding: 0 16px;
+}
+
+.page-title {
+    font-size: 22px;
+    margin-bottom: 16px;
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.tile {
+    display: block;
+    text-align: center;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #111;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+}
+
+.inline {
+    display: inline;
+}
+
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.page-center {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
