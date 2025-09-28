@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  resource :account, only: [:edit], controller: :account do
+  resource :account, only: [ :edit ], controller: :account do
     patch :email
     patch :password
   end
