@@ -7,6 +7,8 @@ services:
       - .:/workspace:cached
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/app_development
       RAILS_ENV: development

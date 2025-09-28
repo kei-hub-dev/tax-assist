@@ -1,43 +1,28 @@
 <div class="auth">
-    <h1>アカウント設定</h1>
+  <h2 class="auth-title">メール/パスワード変更</h2>
 
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "form" }, method: :put) do |f| %>
-    <%= render "devise/shared/error_messages", resource: resource %>
-
-    <%# 名前使う場合 %>
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "form" }) do |f| %>
     <div class="field">
-        <%= f.label :name, "名前" %>
-        <%= f.text_field :name %>
+      <%= f.label :email, "メールアドレス" %>
+      <%= f.email_field :email, autocomplete: "email", placeholder: "name@example.com" %>
     </div>
 
     <div class="field">
-        <%= f.label :email, "メールアドレス" %>
-        <%= f.email_field :email, autocomplete: "email" %>
-    </div>
-
-    <hr>
-
-    <div class="field">
-        <%= f.label :password, "新しいパスワード（変更する場合）" %>
-        <%= f.password_field :password, autocomplete: "new-password" %>
+      <%= f.label :password, "新しいパスワード" %>
+      <%= f.password_field :password, autocomplete: "new-password", placeholder: "6文字以上" %>
     </div>
 
     <div class="field">
-        <%= f.label :password_confirmation, "確認用パスワード" %>
-        <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-    </div>
-
-    <div class="field">
-        <%= f.label :current_password, "現在のパスワード（必須）" %>
-        <%= f.password_field :current_password, autocomplete: "current-password" %>
+      <%= f.label :password_confirmation, "新しいパスワード(確認)" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "もう一度入力" %>
     </div>
 
     <div class="actions">
-        <%= f.submit "更新する", class: "btn" %>
+      <%= f.submit "更新する", class: "btn" %>
     </div>
-    <% end %>
+  <% end %>
 
-    <div class="links">
-        <%= link_to "戻る", root_path %>
-    </div>
+  <div class="links">
+    <%= link_to "戻る", authenticated_root_path %>
+  </div>
 </div>

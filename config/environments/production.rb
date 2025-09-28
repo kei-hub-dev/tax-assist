@@ -77,7 +77,22 @@ Rails.application.configure do
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.
   config.action_mailer.perform_caching = false
-  config.action_mailer.default_url_options = { host: "tax-assist.fly.dev", protocol: "https" }
+  # config.action_mailer.default_url_options = { host: "tax-assist.fly.dev", protocol: "https" }
+  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST"), protocol: "https" }
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              ENV.fetch("SMTP_ADDRESS"),
+    port:                 Integer(ENV.fetch("SMTP_PORT", "587")),
+    domain:               ENV.fetch("SMTP_DOMAIN", ENV.fetch("APP_HOST")),
+    user_name:            ENV.fetch("SMTP_USERNAME"),
+    password:             ENV.fetch("SMTP_PASSWORD"),
+    authentication:       :plain,
+    enable_starttls_auto: true,
+    open_timeout:         5,
+    read_timeout:         5
+  }
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
