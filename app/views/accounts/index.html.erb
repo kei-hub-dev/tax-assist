@@ -1,0 +1,40 @@
+<div class="page">
+    <h1 class="page-title">勘定科目マスタ</h1>
+
+    <div class="actions" style="margin-bottom:12px;">
+        <%= link_to "新規追加", new_account_path, class: "btn btn-sm" %>
+        <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm" %>
+    </div>
+
+    <table style="width:100%; border-collapse:collapse; background:#fff; border:1px solid #ddd; border-radius:12px; overflow:hidden;">
+        <thead>
+            <tr style="background:#f7f7f7;">
+                <th style="text-align:left; padding:10px;">科目名</th>
+                <th style="text-align:left; padding:10px;">区分</th>
+                <th style="width:180px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if @accounts.any? %>
+            <% @accounts.each do |a| %>
+            <tr>
+                <td style="padding:10px;"><%= a.name %></td>
+                <td style="padding:10px;"><%= I18n.t("accounts.categories.#{a.category}", default: a.category) %></td>
+                <td style="padding:10px; text-align:right;">
+                    <%= link_to "編集", edit_account_path(a), class: "btn btn-sm" %>
+                   <%= button_to "削除",
+                        account_path(a),
+                        method: :delete,
+                        form: { onsubmit: "return confirm('#{j a.name} を削除しますか？');" },
+                        class: "btn btn-outline btn-sm" %>
+                </td>
+            </tr>
+            <% end %>
+            <% else %>
+            <tr>
+                <td colspan="3" style="padding:16px; text-align:center; color:#666;">登録された勘定科目はありません</td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>

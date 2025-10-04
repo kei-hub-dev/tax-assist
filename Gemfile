@@ -12,6 +12,7 @@ gem "puma", ">= 5.0"
 gem "jbuilder"
 gem "importmap-rails"
 gem "devise", "~> 4.9"
+gem "rake", "~> 13.3"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 

@@ -1,7 +1,23 @@
-<div class="page">
-  <h2>メニュー</h2>
-  <div class="auth">
-    <%= link_to "メール/パスワード変更", edit_account_path, class: "btn" %>
-    <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn" %>
-  </div>
+<div class="page-center">
+    <div class="auth wide">
+        <h1 class="page-title">メニュー</h1>
+
+        <%= form_with url: select_accounting_period_path, method: :post, local: true do %>
+        <div class="hstack" style="margin: 8px 0 16px;">
+            <label for="accounting_period_id">会計年度</label>
+            <%= select_tag :accounting_period_id,
+          options_from_collection_for_select(@accounting_periods, :id, :accounting_year, @selected_period_id || session[:accounting_period_id]),
+          include_blank: "選択してください" %>
+            <%= submit_tag "次へ", class: "btn" %>
+        </div>
+        <% end %>
+
+        <div class="center-actions vstack">
+            <%= link_to "勘定科目マスタ", accounts_path, class: "btn btn-sm btn-block" %>
+            <%= link_to "事業者情報", edit_business_path, class: "btn btn-sm btn-block" %>
+            <%= link_to "メール/パスワード変更", edit_user_account_path, class: "btn btn-sm btn-block" %>
+            <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn btn-sm btn-block", form: { class: "inline" } %>
+        </div>
+
+    </div>
 </div>

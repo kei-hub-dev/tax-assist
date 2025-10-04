@@ -147,3 +147,152 @@ body.auth-layout {
     justify-content: center;
     align-items: center;
 }
+
+/* --- spacing: flashが固定表示で隠れないように上に余白 --- */
+body {
+    padding-top: 56px;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-top: 64px;
+    }
+}
+
+/* --- フォーム（メニューの年度選択） --- */
+.form-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 0;
+}
+
+.form-row label {
+    min-width: 90px;
+    color: #333;
+}
+
+select,
+button,
+input[type="submit"] {
+    font-size: 16px;
+    line-height: 1.2;
+    height: 36px;
+}
+
+select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fff;
+}
+
+/* --- ボタン拡張 --- */
+.btn {
+    transition: filter .15s ease;
+}
+
+.btn:hover,
+.btn:focus {
+    filter: brightness(0.95);
+}
+
+.btn-block {
+    width: 100%;
+    display: inline-block;
+}
+
+.btn-outline {
+    background: #fff;
+    color: #111;
+    border: 1px solid #111;
+}
+
+.btn-outline:hover {
+    background: #111;
+    color: #fff;
+}
+
+/* --- ページ見出しとコンテナ --- */
+.page-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: .02em;
+    margin: 8px 0 16px;
+}
+
+.page small {
+    font-size: 14px;
+    color: #666;
+    margin-left: 8px;
+}
+
+/* --- 会計メニューのリスト --- */
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+    display: grid;
+    gap: 12px;
+    max-width: 320px;
+}
+
+.menu-list a.btn {
+    display: block;
+}
+
+.menu-actions {
+    margin-top: 12px;
+}
+
+/* --- タイルの余白微調整（既存 .tiles/.tile を活かす） --- */
+.tiles {
+    gap: 20px;
+}
+
+.tile {
+    padding: 18px;
+}
+
+.page .btn {
+    width: auto;
+    display: inline-block;
+    padding: 8px 16px;
+}
+
+.page-center {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth.wide {
+    width: min(520px, 92vw);
+    text-align: center;
+}
+
+.hstack {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.center-actions .btn {
+    width: auto;
+    display: inline-block;
+}
+
+.vstack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 14px;
+}
