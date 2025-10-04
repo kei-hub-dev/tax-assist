@@ -1,0 +1,17 @@
+<div class="page-center">
+  <div class="auth wide">
+    <h1 class="page-title">事業者情報</h1>
+
+    <%= form_with model: @user, url: business_path, method: :patch, local: true, html: { class: "form" } do |f| %>
+      <div class="field">
+        <label for="user_business_name">屋号（事業者名）</label>
+        <%= f.text_field :business_name, placeholder: "例）山田商店" %>
+      </div>
+    <div class="actions vstack">
+      <%= f.submit "更新", class: "btn btn-sm btn-block" %>
+      <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm btn-block" %>
+    </div>
+
+    <% end %>
+  </div>
+</div>

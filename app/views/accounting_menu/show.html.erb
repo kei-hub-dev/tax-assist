@@ -1,0 +1,9 @@
+<div class="page">
+    <h1>会計メニュー <small>選択中の会計年度: <%= @period.accounting_year %></small></h1>
+    <ul class="menu-list">
+        <li><%= link_to "開始残高", "#", class: "btn" %></li>
+        <li><%= link_to "仕訳登録", "#", class: "btn" %></li>
+        <li><%= link_to "仕訳の一覧", "#", class: "btn" %></li>
+        <li><%= link_to "戻る", authenticated_root_path %></li>
+    </ul>
+</div>

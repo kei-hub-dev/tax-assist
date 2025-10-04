@@ -17,6 +17,9 @@ module TaxAssist
     config.autoload_lib(ignore: %w[assets tasks])
     config.autoload_paths << Rails.root.join("app/validators")
     config.eager_load_paths << Rails.root.join("app/validators")
+    config.i18n.default_locale = :ja
+    config.i18n.available_locales = [ :ja, :en ]
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
