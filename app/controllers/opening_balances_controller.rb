@@ -25,10 +25,10 @@ class OpeningBalancesController < ApplicationController
       return
     end
 
-    raw = params.require(:opening_balances).permit!.to_h
+    balances = opening_balance_params
 
     ActiveRecord::Base.transaction do
-      raw.each do |account_id, attrs|
+      balances.each do |account_id, attrs|
         ob = OpeningBalance.find_or_initialize_by(accounting_period: @period, account_id: account_id)
         ob.debit_amount  = attrs[:debit_amount].to_i
         ob.credit_amount = attrs[:credit_amount].to_i
@@ -47,5 +47,16 @@ class OpeningBalancesController < ApplicationController
 
   def require_accounting_period!
     redirect_to authenticated_root_path, alert: "会計年度を選択してください" unless session[:accounting_period_id].present?
+  end
+
+  def opening_balance_params
+    raw = params.require(:opening_balances)
+    safe = {}
+    current_user.accounts.pluck(:id).each do |id|
+      key = id.to_s
+      next unless raw[key].is_a?(ActionController::Parameters)
+      safe[id] = raw.require(key).permit(:debit_amount, :credit_amount)
+    end
+    safe
   end
 end
