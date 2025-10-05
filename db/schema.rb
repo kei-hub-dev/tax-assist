@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_04_153112) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_05_031501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -34,6 +34,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_04_153112) do
     t.index ["user_id"], name: "index_accounts_on_user_id"
   end
 
+  create_table "opening_balances", force: :cascade do |t|
+    t.bigint "accounting_period_id", null: false
+    t.bigint "account_id", null: false
+    t.integer "debit_amount", default: 0, null: false
+    t.integer "credit_amount", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_opening_balances_on_account_id"
+    t.index ["accounting_period_id", "account_id"], name: "index_opening_balances_on_accounting_period_id_and_account_id", unique: true
+    t.index ["accounting_period_id"], name: "index_opening_balances_on_accounting_period_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -49,4 +61,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_04_153112) do
 
   add_foreign_key "accounting_periods", "users"
   add_foreign_key "accounts", "users"
+  add_foreign_key "opening_balances", "accounting_periods"
+  add_foreign_key "opening_balances", "accounts"
 end
