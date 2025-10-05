@@ -1,23 +1,48 @@
-<div class="page-center">
-    <div class="auth wide">
+<div class="page">
+    <div class="narrow">
         <h1 class="page-title">メニュー</h1>
 
-        <%= form_with url: select_accounting_period_path, method: :post, local: true do %>
-        <div class="hstack" style="margin: 8px 0 16px;">
-            <label for="accounting_period_id">会計年度</label>
-            <%= select_tag :accounting_period_id,
-          options_from_collection_for_select(@accounting_periods, :id, :accounting_year, @selected_period_id || session[:accounting_period_id]),
-          include_blank: "選択してください" %>
-            <%= submit_tag "次へ", class: "btn" %>
+        <% if current_period %>
+        <div class="year-banner">
+            選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span>
         </div>
+        <% else %>
+        <div class="year-banner warn">会計年度が未選択です</div>
         <% end %>
 
-        <div class="center-actions vstack">
-            <%= link_to "勘定科目マスタ", accounts_path, class: "btn btn-sm btn-block" %>
-            <%= link_to "事業者情報", edit_business_path, class: "btn btn-sm btn-block" %>
-            <%= link_to "メール/パスワード変更", edit_user_account_path, class: "btn btn-sm btn-block" %>
-            <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn btn-sm btn-block", form: { class: "inline" } %>
-        </div>
+        <div id="year-select" class="menu-groups" style="margin-top:16px;">
+            <section class="menu-group">
+                <h2 class="group-title">会計年度の選択</h2>
+                <div class="vstack group-actions">
+                    <%= form_with url: select_accounting_period_path, method: :post, local: true do %>
+                    <div class="form-row">
+                        <label for="accounting_period_id">会計年度</label>
+                        <%= select_tag :accounting_period_id,
+                options_from_collection_for_select(@accounting_periods, :id, :accounting_year, @selected_period_id || session[:accounting_period_id]),
+                include_blank: "選択してください" %>
+                    </div>
+                    <div class="actions" style="margin-top:8px;">
+                        <%= submit_tag "設定", class: "btn btn-sm btn-block" %>
+                    </div>
+                    <% end %>
+                </div>
+            </section>
 
+            <section class="menu-group">
+                <h2 class="group-title">会計設定</h2>
+                <div class="vstack group-actions">
+                    <%= link_to "勘定科目マスタ", accounts_path, class: "btn btn-sm btn-block" %>
+                </div>
+            </section>
+
+            <section class="menu-group">
+                <h2 class="group-title">アカウント設定</h2>
+                <div class="vstack group-actions">
+                    <%= link_to "事業者情報", edit_business_path, class: "btn btn-sm btn-block" %>
+                    <%= link_to "メール/パスワード変更", edit_user_account_path, class: "btn btn-sm btn-block" %>
+                    <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn btn-sm btn-block", form: { class: "inline" } %>
+                </div>
+            </section>
+        </div>
     </div>
 </div>

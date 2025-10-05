@@ -1,7 +1,18 @@
 html,
 body {
     height: 100%;
-    margin: 0;
+    margin: 0
+}
+
+body {
+    background: #f5f5f7;
+    padding-top: 56px
+}
+
+@media (max-width:480px) {
+    body {
+        padding-top: 64px
+    }
 }
 
 #flash-messages {
@@ -11,7 +22,7 @@ body {
     width: 100%;
     z-index: 9999;
     text-align: center;
-    pointer-events: none;
+    pointer-events: none
 }
 
 .flash {
@@ -22,30 +33,56 @@ body {
     background: #f0f0f0;
     color: #333;
     border: 1px solid #ccc;
-    pointer-events: auto;
+    pointer-events: auto
 }
 
 .flash.notice {
     background: #dff0d8;
     color: #2e7d32;
-    border-color: #bde5b8;
+    border-color: #bde5b8
 }
 
 .flash.alert {
     background: #f2dede;
     color: #a94442;
-    border-color: #ebcccc;
+    border-color: #ebcccc
 }
 
-body {
-    background: #f5f5f7;
+.page {
+    max-width: 960px;
+    margin: 48px auto;
+    padding: 0 16px
 }
 
-body.auth-layout {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.page.compact {
+    margin: 16px auto
+}
+
+.narrow {
+    max-width: 640px;
+    margin: 0 auto
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    margin: 8px 0 16px
+}
+
+.group-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 12px
+}
+
+.inline {
+    display: inline
+}
+
+.links {
+    margin-top: 16px;
+    font-size: 14px
 }
 
 .auth {
@@ -55,22 +92,26 @@ body.auth-layout {
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
-    text-align: center;
+    text-align: center
+}
+
+.auth.wide {
+    width: min(520px, 92vw)
 }
 
 .auth-title {
     margin-bottom: 16px;
-    font-size: 20px;
+    font-size: 20px
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 12px
 }
 
 .form .field {
-    text-align: left;
+    text-align: left
 }
 
 .form input {
@@ -78,98 +119,19 @@ body.auth-layout {
     padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    box-sizing: border-box;
+    box-sizing: border-box
 }
 
-.actions {
-    margin-top: 12px;
-}
-
-.btn {
-    width: 100%;
-    padding: 8px;
-    background: #111;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.links {
-    margin-top: 16px;
-    font-size: 14px;
-}
-
-.page {
-    max-width: 960px;
-    margin: 48px auto;
-    padding: 0 16px;
-}
-
-.page-title {
-    font-size: 22px;
-    margin-bottom: 16px;
-}
-
-.tiles {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
-}
-
-.tile {
-    display: block;
-    text-align: center;
-    padding: 16px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    text-decoration: none;
-    color: #111;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
-}
-
-.inline {
-    display: inline;
-}
-
-.menu-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.page-center {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* --- spacing: flashが固定表示で隠れないように上に余白 --- */
-body {
-    padding-top: 56px;
-}
-
-@media (max-width: 480px) {
-    body {
-        padding-top: 64px;
-    }
-}
-
-/* --- フォーム（メニューの年度選択） --- */
 .form-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 12px 0;
+    margin: 12px 0
 }
 
 .form-row label {
     min-width: 90px;
-    color: #333;
+    color: #333
 }
 
 select,
@@ -177,99 +139,78 @@ button,
 input[type="submit"] {
     font-size: 16px;
     line-height: 1.2;
-    height: 36px;
+    height: 36px
 }
 
 select {
     padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid #ccc;
-    background: #fff;
+    background: #fff
 }
 
-/* --- ボタン拡張 --- */
+.actions {
+    margin-top: 12px
+}
+
 .btn {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
     transition: filter .15s ease;
+    display: inline-block
 }
 
 .btn:hover,
 .btn:focus {
-    filter: brightness(0.95);
-}
-
-.btn-block {
-    width: 100%;
-    display: inline-block;
+    filter: brightness(0.95)
 }
 
 .btn-outline {
     background: #fff;
     color: #111;
-    border: 1px solid #111;
+    border: 1px solid #111
 }
 
 .btn-outline:hover {
     background: #111;
-    color: #fff;
+    color: #fff
 }
 
-/* --- ページ見出しとコンテナ --- */
-.page-title {
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: .02em;
-    margin: 8px 0 16px;
+.btn-sm {
+    padding: 8px;
+    font-size: 14px
 }
 
-.page small {
-    font-size: 14px;
-    color: #666;
-    margin-left: 8px;
+.btn-lg {
+    padding: 12px;
+    font-size: 16px
 }
 
-/* --- 会計メニューのリスト --- */
-.menu-list {
-    list-style: none;
-    padding: 0;
-    margin: 16px 0;
-    display: grid;
-    gap: 12px;
-    max-width: 320px;
+.btn-block {
+    width: 100%
 }
 
-.menu-list a.btn {
-    display: block;
-}
-
-.menu-actions {
-    margin-top: 12px;
-}
-
-/* --- タイルの余白微調整（既存 .tiles/.tile を活かす） --- */
-.tiles {
-    gap: 20px;
-}
-
-.tile {
-    padding: 18px;
-}
-
-.page .btn {
+.btn-inline {
     width: auto;
     display: inline-block;
-    padding: 8px 16px;
+    margin-left: 6px
 }
 
-.page-center {
-    min-height: 100vh;
+.btn-inline:first-child {
+    margin-left: 0
+}
+
+.vstack {
     display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.auth.wide {
-    width: min(520px, 92vw);
-    text-align: center;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch
 }
 
 .hstack {
@@ -277,22 +218,127 @@ select {
     justify-content: center;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: wrap
 }
 
-.center-actions .btn {
-    width: auto;
+.year-banner {
+    width: 100%;
+    margin: 16px auto 0;
+    padding: 8px 12px;
+    background: #f7f7f9;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    text-align: left
+}
+
+.year-banner.warn {
+    background: #fdecea;
+    border-color: #f5c2c7;
+    color: #b71c1c
+}
+
+.year-pill {
     display: inline-block;
+    margin-left: 6px;
+    padding: 2px 8px;
+    background: #111;
+    color: #fff;
+    border-radius: 999px;
+    font-weight: 600
 }
 
-.vstack {
+.menu-groups {
+    max-width: 640px;
+    margin: 24px auto 0;
+    display: grid;
+    gap: 24px
+}
+
+.menu-group {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .04);
+    overflow: hidden
+}
+
+.group-actions .btn,
+.actions .btn {
+    width: 100%
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+    display: grid;
+    gap: 10px
+}
+
+.menu-list .btn {
+    width: 100%
+}
+
+.table-wrap {
+    width: 100%;
+    max-width: 960px;
+    overflow-x: auto;
+    margin: 0 auto
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle
+}
+
+.table thead th {
+    background: #f7f7f7
+}
+
+.table tbody tr:nth-child(odd) td {
+    background: #fcfcfc
+}
+
+.actions-col {
+    width: 220px
+}
+
+.actions-cell {
+    text-align: right;
+    white-space: nowrap
+}
+
+.sum-row {
+    font-weight: 700;
+    background: #fafafa;
+    transition: background-color .2s, color .2s
+}
+
+.sum-row.sum-ok {
+    background: #e8f5e9;
+    color: #1b5e20
+}
+
+.sum-row.sum-ng {
+    background: #fdecea;
+    color: #b71c1c
+}
+
+.center-screen {
+    min-height: calc(100vh - 56px);
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: stretch;
-}
-
-.btn-sm {
-    padding: 6px 10px;
-    font-size: 14px;
+    align-items: center;
+    justify-content: center
 }

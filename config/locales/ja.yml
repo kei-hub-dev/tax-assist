@@ -36,3 +36,5 @@ ja:
     messages:
       blank: を入力してください
       inclusion: は一覧に含まれていません
+      not_saved: "%{count}件のエラーにより保存できませんでした"
+      confirmation: "が一致しません"

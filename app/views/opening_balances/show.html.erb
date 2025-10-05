@@ -1,0 +1,103 @@
+<div class="page-center">
+    <div class="auth wide">
+        <h1 class="page-title">開始残高設定</h1>
+        <p style="text-align:center; margin-bottom:16px;">選択中の会計年度:<%= @period.accounting_year %> (繰越:<%= @prev_year %>)</p>
+
+        <%= form_with url: opening_balances_path, method: :put, local: true do %>
+        <table class="table" style="margin-bottom:12px;">
+            <thead>
+                <tr>
+                    <th>科目</th>
+                    <th style="text-align:right;">借方残高</th>
+                    <th style="text-align:right;">貸方残高</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% @accounts.each do |acc| %>
+                <% bal = @balances[acc.id] %>
+                <tr>
+                    <td><%= acc.name %></td>
+                    <td style="text-align:right;">
+                        <%= number_field_tag "opening_balances[#{acc.id}][debit_amount]",  bal&.debit_amount || 0, min: 0, step: 1 %>
+                    </td>
+                    <td style="text-align:right;">
+                        <%= number_field_tag "opening_balances[#{acc.id}][credit_amount]", bal&.credit_amount || 0, min: 0, step: 1 %>
+                    </td>
+                </tr>
+                <% end %>
+                <% if @accounts.empty? %>
+                <tr>
+                    <td colspan="3" style="text-align:center; color:#666;">まず勘定科目を作成してください</td>
+                </tr>
+                <% end %>
+                <tr id="sum-row" class="sum-row">
+                    <td>合計</td>
+                    <td id="total-debit" style="text-align:right;"><%= number_with_delimiter(@total_debit) %></td>
+                    <td id="total-credit" style="text-align:right;"><%= number_with_delimiter(@total_credit) %></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="actions vstack">
+            <%= link_to "戻る", accounting_menu_path, class: "btn btn-outline btn-sm btn-block" %>
+            <%= submit_tag "保存", id: "ob-submit", class: "btn btn-sm btn-block", disabled: @accounts.empty? %>
+        </div>
+        <% end %>
+    </div>
+</div>
+
+<script>
+    (function() {
+        function setup() {
+            var form = document.querySelector('form[action$="/opening_balances"]');
+            if (!form) return;
+            var debitInputs = form.querySelectorAll('input[name^="opening_balances"][name$="[debit_amount]"]');
+            var creditInputs = form.querySelectorAll('input[name^="opening_balances"][name$="[credit_amount]"]');
+            var totalDebitEl = document.getElementById('total-debit');
+            var totalCreditEl = document.getElementById('total-credit');
+            var sumRow = document.getElementById('sum-row');
+            var noteEl = document.getElementById('sum-note'); // 任意表示
+
+            function toInt(v) {
+                var n = parseInt(v, 10);
+                return isNaN(n) ? 0 : n;
+            }
+
+            function recalc() {
+                var td = 0,
+                    tc = 0;
+                debitInputs.forEach(function(i) {
+                    td += toInt(i.value);
+                });
+                creditInputs.forEach(function(i) {
+                    tc += toInt(i.value);
+                });
+                if (totalDebitEl) totalDebitEl.textContent = td.toLocaleString();
+                if (totalCreditEl) totalCreditEl.textContent = tc.toLocaleString();
+                var match = (td === tc);
+                if (sumRow) {
+                    sumRow.classList.toggle('sum-ok', match);
+                    sumRow.classList.toggle('sum-ng', !match);
+                }
+                if (noteEl) {
+                    noteEl.style.display = match ? "none" : "block";
+                }
+            }
+
+            debitInputs.forEach(function(i) {
+                i.addEventListener('input', recalc);
+            });
+            creditInputs.forEach(function(i) {
+                i.addEventListener('input', recalc);
+            });
+            recalc();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setup);
+        } else {
+            setup();
+        }
+        document.addEventListener('turbo:load', setup);
+    })();
+</script>
