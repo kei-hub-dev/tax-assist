@@ -1,0 +1,25 @@
+<div class="page">
+  <div class="narrow">
+    <h1 class="page-title">仕訳 編集</h1>
+
+    <%= form_with model: @entry, local: true, html: { class: "form" } do |f| %>
+      <div class="field">
+        <label>伝票No</label>
+        <div><%= @entry.entry_no %></div>
+      </div>
+
+      <div class="field">
+        <label for="journal_entry_entry_date">日付</label>
+        <%= f.date_field :entry_date %>
+      </div>
+
+      <% @entry.journal_entry_lines.build if @entry.journal_entry_lines.empty? %>
+      <%= render partial: "lines_fields", locals: { f: f } %>
+
+      <div class="actions vstack">
+        <%= f.submit "更新", class: "btn btn-sm btn-block" %>
+        <%= link_to "戻る", journal_entries_path, class: "btn btn-outline btn-sm btn-block" %>
+      </div>
+    <% end %>
+  </div>
+</div>

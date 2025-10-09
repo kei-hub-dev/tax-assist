@@ -5,7 +5,11 @@
   ],
   "service": "web",
   "workspaceFolder": "/workspace",
-  "overrideCommand": false,
+  "overrideCommand": true,
+  "runServices": [
+    "db",
+    "web"
+  ],
   "remoteEnv": {
     "BUNDLE_PATH": "/usr/local/bundle"
   },

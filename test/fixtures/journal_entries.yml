@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  accounting_period: one
+  entry_no: 1
+  entry_date: 2025-10-05
+  description: MyString
+
+two:
+  accounting_period: two
+  entry_no: 1
+  entry_date: 2025-10-05
+  description: MyString

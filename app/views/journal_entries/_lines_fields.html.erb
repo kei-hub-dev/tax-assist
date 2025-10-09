@@ -1,0 +1,71 @@
+<div class="table-wrap" style="margin-top:12px;">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>勘定科目</th>
+                <th>貸借</th>
+                <th style="text-align:right;">金額</th>
+                <th>メモ</th>
+                <th style="width:100px;"></th>
+            </tr>
+        </thead>
+        <tbody id="lines">
+            <%= f.fields_for :journal_entry_lines do |lf| %>
+            <tr class="line">
+                <%= lf.hidden_field :id %>
+                <%= lf.hidden_field :_destroy, value: 0 %>
+                <td><%= lf.collection_select :account_id, current_user.accounts.order(:category, :name), :id, :name, include_blank: "選択" %></td>
+                <td><%= lf.select :dc, [["借方","debit"],["貸方","credit"]], include_blank: "選択" %></td>
+                <td style="text-align:right;"><%= lf.number_field :amount, min: 0, step: 1 %></td>
+                <td><%= lf.text_field :memo %></td>
+                <td>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('tr').querySelector('input[name*=\'[_destroy]\']').value=1; this.closest('tr').style.display='none';">
+                        行削除
+                    </button>
+                </td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+
+    <div class="actions" style="margin-top:8px;">
+        <button type="button" class="btn btn-sm" id="add-line-btn">行を追加</button>
+    </div>
+</div>
+
+<%# 新規行のプロトタイプ（Railsの child_index 置換） %>
+<% prototype_html = capture do %>
+<%= f.fields_for :journal_entry_lines, JournalEntryLine.new, child_index: "NEW_RECORD" do |lf| %>
+<tr class="line">
+    <%= lf.hidden_field :id %>
+    <%= lf.hidden_field :_destroy, value: 0 %>
+    <td><%= lf.collection_select :account_id, current_user.accounts.order(:category, :name), :id, :name, include_blank: "選択" %></td>
+    <td><%= lf.select :dc, [["借方","debit"],["貸方","credit"]], include_blank: "選択" %></td>
+    <td style="text-align:right;"><%= lf.number_field :amount, min: 0, step: 1, value: 0 %></td>
+    <td><%= lf.text_field :memo %></td>
+    <td>
+        <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('tr').querySelector('input[name*=\'[_destroy]\']').value=1; this.closest('tr').style.display='none';">
+            行削除
+        </button>
+    </td>
+</tr>
+<% end %>
+<% end %>
+
+<script>
+    (function() {
+        var addBtn = document.getElementById('add-line-btn');
+        if (!addBtn) return;
+        var tbody = document.getElementById('lines');
+        var template = `<%= j prototype_html %>`; // NEW_RECORD を都度置換
+
+        addBtn.addEventListener('click', function() {
+            var unique = Date.now().toString();
+            var html = template.replace(/NEW_RECORD/g, unique);
+            var temp = document.createElement('tbody');
+            temp.innerHTML = html.trim();
+            var row = temp.firstElementChild;
+            tbody.appendChild(row);
+        });
+    })();
+</script>

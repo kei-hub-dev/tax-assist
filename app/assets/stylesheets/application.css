@@ -342,3 +342,22 @@ select {
     align-items: center;
     justify-content: center
 }
+
+.actions-col {
+    width: 180px;
+}
+
+.actions-cell {
+    text-align: right;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.action-buttons .btn {
+    width: auto;
+    padding: 6px 10px;
+}
