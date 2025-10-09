@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resource :business, only: [ :edit, :update ], controller: :business
   resources :accounts
   resource :opening_balances, only: [ :show, :update ], controller: :opening_balances
+  resources :journal_entries, only: [ :index, :create, :edit, :update, :destroy ]
 
   authenticated :user do
     root "home#index", as: :authenticated_root

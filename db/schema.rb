@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_05_031501) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_05_084137) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,6 +32,30 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_05_031501) do
     t.datetime "updated_at", null: false
     t.index ["user_id", "name"], name: "index_accounts_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "journal_entries", force: :cascade do |t|
+    t.bigint "accounting_period_id", null: false
+    t.integer "entry_no", null: false
+    t.date "entry_date", null: false
+    t.string "description", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["accounting_period_id", "entry_no"], name: "index_journal_entries_on_accounting_period_id_and_entry_no", unique: true
+    t.index ["accounting_period_id"], name: "index_journal_entries_on_accounting_period_id"
+  end
+
+  create_table "journal_entry_lines", force: :cascade do |t|
+    t.bigint "journal_entry_id", null: false
+    t.bigint "account_id", null: false
+    t.string "dc", null: false
+    t.integer "amount", default: 0, null: false
+    t.string "memo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_journal_entry_lines_on_account_id"
+    t.index ["journal_entry_id", "account_id"], name: "index_journal_entry_lines_on_journal_entry_id_and_account_id"
+    t.index ["journal_entry_id"], name: "index_journal_entry_lines_on_journal_entry_id"
   end
 
   create_table "opening_balances", force: :cascade do |t|
@@ -61,6 +85,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_05_031501) do
 
   add_foreign_key "accounting_periods", "users"
   add_foreign_key "accounts", "users"
+  add_foreign_key "journal_entries", "accounting_periods"
+  add_foreign_key "journal_entry_lines", "accounts"
+  add_foreign_key "journal_entry_lines", "journal_entries"
   add_foreign_key "opening_balances", "accounting_periods"
   add_foreign_key "opening_balances", "accounts"
 end
