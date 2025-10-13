@@ -114,6 +114,8 @@ GEM
     erubi (1.13.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    grover (1.2.3)
+      nokogiri (~> 1)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.2.2)
@@ -308,6 +310,7 @@ DEPENDENCIES
   capybara
   debug
   devise (~> 4.9)
+  grover
   importmap-rails
   jbuilder
   pg (~> 1.1)

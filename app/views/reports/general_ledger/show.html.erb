@@ -1,0 +1,55 @@
+<div class="page">
+    <div class="narrow">
+        <h1 class="page-title">総勘定元帳</h1>
+        <div class="year-banner">選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span></div>
+
+        <div class="table-wrap" style="margin-top:16px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>勘定科目</th>
+                        <th style="text-align:right;">借方合計</th>
+                        <th style="text-align:right;">貸方合計</th>
+                        <th style="text-align:right;">差額（借方−貸方）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if @rows.present? %>
+                    <% @rows.each do |r| %>
+                    <tr>
+                        <td><%= r[:account_name] %></td>
+                        <td style="text-align:right;"><%= number_with_delimiter(r[:debit].to_i) %></td>
+                        <td style="text-align:right;"><%= number_with_delimiter(r[:credit].to_i) %></td>
+                        <td style="text-align:right;"><%= number_with_delimiter(r[:balance].to_i) %></td>
+                    </tr>
+                    <% end %>
+                    <% total_debit  = @rows.sum { |x| x[:debit].to_i } %>
+                    <% total_credit = @rows.sum { |x| x[:credit].to_i } %>
+                    <% total_balance = @rows.sum { |x| x[:balance].to_i } %>
+                    <tr class="sum-row">
+                        <td>合計</td>
+                        <td style="text-align:right;"><%= number_with_delimiter(total_debit) %></td>
+                        <td style="text-align:right;"><%= number_with_delimiter(total_credit) %></td>
+                        <td style="text-align:right;"><%= number_with_delimiter(total_balance) %></td>
+                    </tr>
+                    <% else %>
+                    <tr>
+                        <td colspan="4" style="text-align:center;color:#666;">データがありません</td>
+                    </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="actions" style="margin-top:12px;">
+            <div>ダウンロード:
+                <%= link_to "CSV", reports_general_ledger_path(format: :csv) %> /
+                <%= link_to "PDF", reports_general_ledger_path(format: :pdf) %>
+            </div>
+            <div class="hstack" style="margin-top:8px;">
+                <%= link_to "仕訳帳を開く", journal_book_path, class: "btn btn-sm" %>
+                <%= link_to "会計メニューに戻る", accounting_menu_path, class: "btn btn-outline btn-sm" %>
+            </div>
+        </div>
+    </div>
+</div>

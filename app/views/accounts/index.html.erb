@@ -1,7 +1,7 @@
 <div class="page">
     <h1 class="page-title">勘定科目マスタ</h1>
 
-    <div class="actions-bar">
+    <div class="actions" style="margin-bottom:12px;">
         <%= link_to "新規追加", new_account_path, class: "btn btn-sm" %>
         <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm" %>
     </div>
@@ -10,38 +10,35 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>科目名</th>
-                    <th>区分</th>
-                    <th class="actions-col">操作</th>
+                    <th style="text-align:left;">科目名</th>
+                    <th style="text-align:left;">区分</th>
+                    <th style="text-align:left;">サブ区分</th>
+                    <th style="width:180px; text-align:right;">操作</th>
                 </tr>
             </thead>
             <tbody>
                 <% if @accounts.any? %>
+                <% subs = I18n.t("accounts.sub_categories") %>
                 <% @accounts.each do |a| %>
                 <tr>
                     <td><%= a.name %></td>
                     <td><%= I18n.t("accounts.categories.#{a.category}", default: a.category) %></td>
-                    <td class="actions-cell">
+                    <td><%= subs.dig(a.category, a.sub_category) || "-" %></td>
+                    <td class="actions-cell" style="text-align:right; white-space:nowrap;">
                         <%= link_to "編集", edit_account_path(a), class: "btn btn-sm btn-inline" %>
-                        <%= button_to "削除",
-                      account_path(a),
+                        <%= button_to "削除", account_path(a),
                       method: :delete,
-                      form: { data: { turbo_confirm: "#{a.name} を削除しますか？" } },
+                      form: { data: { turbo_confirm: "削除しますか？" } },
                       class: "btn btn-outline btn-sm btn-inline" %>
                     </td>
                 </tr>
                 <% end %>
                 <% else %>
                 <tr>
-                    <td colspan="3" style="text-align:center; color:#666;">登録された勘定科目はありません</td>
+                    <td colspan="4" style="text-align:center;color:#666;">登録された勘定科目はありません</td>
                 </tr>
                 <% end %>
             </tbody>
         </table>
-    </div>
-
-    <div class="actions-bar" style="margin-top:12px;">
-        <%= link_to "新規追加", new_account_path, class: "btn btn-sm" %>
-        <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm" %>
     </div>
 </div>

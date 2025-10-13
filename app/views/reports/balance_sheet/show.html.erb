@@ -1,0 +1,95 @@
+<!-- app/views/reports/balance_sheet/show.html.erb -->
+<div class="page">
+    <div class="narrow">
+        <h1 class="page-title">貸借対照表</h1>
+        <div class="year-banner">
+            選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span>
+        </div>
+
+        <div class="table-wrap" style="margin-top:16px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width:50%;">資産</th>
+                        <th style="width:50%;">負債・純資産</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="vertical-align:top;">
+                            <table class="table" style="margin:0;">
+                                <thead>
+                                    <tr>
+                                        <th>科目</th>
+                                        <th style="text-align:right;">開始残高</th>
+                                        <th style="text-align:right;">当期増減</th>
+                                        <th style="text-align:right;">期末残高</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% @assets.each do |r| %>
+                                    <tr>
+                                        <td><%= r[:name] %></td>
+                                        <td style="text-align:right;"><%= amt(r[:open]) %></td>
+                                        <td style="text-align:right;"><%= amt(r[:move]) %></td>
+                                        <td style="text-align:right;"><%= amt(r[:end]) %></td>
+                                    </tr>
+                                    <% end %>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="sum-row">
+                                        <td>資産合計</td>
+                                        <td style="text-align:right;"><%= amt(@total_assets_open) %></td>
+                                        <td style="text-align:right;"><%= amt(@total_assets_move) %></td>
+                                        <td style="text-align:right;"><%= amt(@total_assets_end) %></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </td>
+
+                        <td style="vertical-align:top;">
+                            <table class="table" style="margin:0;">
+                                <thead>
+                                    <tr>
+                                        <th>科目</th>
+                                        <th style="text-align:right;">開始残高</th>
+                                        <th style="text-align:right;">当期増減</th>
+                                        <th style="text-align:right;">期末残高</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% (@liabs + @equities).each do |r| %>
+                                    <tr>
+                                        <td><%= r[:name] %></td>
+                                        <td style="text-align:right;"><%= amt(r[:open]) %></td>
+                                        <td style="text-align:right;"><%= amt(r[:move]) %></td>
+                                        <td style="text-align:right;"><%= amt(r[:end]) %></td>
+                                    </tr>
+                                    <% end %>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="sum-row">
+                                        <td>負債・純資産合計</td>
+                                        <td style="text-align:right;"><%= amt(@total_leq_open) %></td>
+                                        <td style="text-align:right;"><%= amt(@total_leq_move) %></td>
+                                        <td style="text-align:right;"><%= amt(@total_leq_end) %></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="actions" style="margin-top:12px;">
+            <div>ダウンロード:
+                <%= link_to "CSV", reports_balance_sheet_path(format: :csv) %> /
+                <%= link_to "PDF", reports_balance_sheet_path(format: :pdf) %>
+            </div>
+            <div class="hstack" style="margin-top:8px;">
+                <%= link_to "会計メニューに戻る", accounting_menu_path, class: "btn btn-outline btn-sm" %>
+            </div>
+        </div>
+    </div>
+</div>

@@ -6,7 +6,17 @@ ja:
       equity: 純資産
       revenue: 収益
       expense: 費用
-
+    sub_categories:
+      revenue:
+        sales: 売上高
+        non_op_income: 営業外収益
+        special_gain: 特別利益
+      expense:
+        cogs: 売上原価
+        sganda: 販売費及び一般管理費
+        non_op_expense: 営業外費用
+        special_loss: 特別損失
+        tax: 税等
   devise:
     failure:
       not_found_in_database: メールアドレスまたはパスワードが正しくありません
@@ -18,6 +28,10 @@ ja:
       signed_up: 登録が完了しました
   activerecord:
     attributes:
+      journal_entry_line:
+        account: 勘定科目
+        dc: 貸借
+        amount: 金額
       account:
         name: 科目名
         category: 区分
@@ -37,4 +51,4 @@ ja:
       blank: を入力してください
       inclusion: は一覧に含まれていません
       not_saved: "%{count}件のエラーにより保存できませんでした"
-      confirmation: "が一致しません"
+      confirmation: が一致しません

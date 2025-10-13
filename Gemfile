@@ -13,6 +13,7 @@ gem "jbuilder"
 gem "importmap-rails"
 gem "devise", "~> 4.9"
 gem "rake", "~> 13.3"
+gem "grover"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 

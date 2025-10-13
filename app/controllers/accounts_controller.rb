@@ -1,9 +1,23 @@
+# app/controllers/accounts_controller.rb
 class AccountsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_account, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @accounts = current_user.accounts.order(:category, :name)
+  end
+
+  def sub_categories
+    @accounts = current_user.accounts.where(category: %w[revenue expense]).order(:category, :name)
+  end
+
+  def update_sub_categories
+    raw = params.require(:accounts).permit!
+    ids = raw.keys
+    current_user.accounts.where(id: ids).find_each do |acc|
+      acc.update(sub_category: raw[acc.id.to_s][:sub_category].presence)
+    end
+    redirect_to accounts_path, notice: "サブ区分を更新しました"
   end
 
   def show
@@ -45,6 +59,6 @@ class AccountsController < ApplicationController
   end
 
   def account_params
-    params.require(:account).permit(:name, :category)
+    params.require(:account).permit(:name, :category, :sub_category)
   end
 end
