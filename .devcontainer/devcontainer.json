@@ -5,7 +5,7 @@
   ],
   "service": "web",
   "workspaceFolder": "/workspace",
-  "overrideCommand": true,
+  "overrideCommand": false,
   "runServices": [
     "db",
     "web"
@@ -24,7 +24,9 @@
       ],
       "settings": {
         "editor.formatOnSave": true,
-        "rubyLsp.enabled": true
+        "rubyLsp.enabled": true,
+        "extensions.autoCheckUpdates": false,
+        "extensions.autoUpdate": false
       }
     }
   },

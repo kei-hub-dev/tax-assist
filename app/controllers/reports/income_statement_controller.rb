@@ -1,8 +1,6 @@
-# app/controllers/reports/income_statement_controller.rb
 require "csv"
 
 class Reports::IncomeStatementController < ApplicationController
-  before_action :authenticate_user!
   before_action :require_accounting_period!
 
   def show
@@ -10,33 +8,33 @@ class Reports::IncomeStatementController < ApplicationController
 
     base = JournalEntryLine.joins(:journal_entry).where(journal_entries: { accounting_period_id: period_id })
 
-    rev_by_sub = base.where(dc: "credit").joins(:account).where(accounts: { category: "revenue" })
-                     .group("COALESCE(accounts.sub_category, 'sales')").sum(:amount)
-    exp_by_sub = base.where(dc: "debit").joins(:account).where(accounts: { category: "expense" })
-                     .group("COALESCE(accounts.sub_category, 'sganda')").sum(:amount)
+    revenue_by_subcategory = base.where(dc: "credit").joins(:account).where(accounts: { category: "revenue" })
+                                .group("COALESCE(accounts.sub_category, 'sales')").sum(:amount)
+    expense_by_subcategory = base.where(dc: "debit").joins(:account).where(accounts: { category: "expense" })
+                                .group("COALESCE(accounts.sub_category, 'sganda')").sum(:amount)
 
-    @rev_breakdown = {
-      "sales"          => rev_by_sub["sales"].to_i,
-      "non_op_income"  => rev_by_sub["non_op_income"].to_i,
-      "special_gain"   => rev_by_sub["special_gain"].to_i
+    @revenue_totals = {
+      "sales"         => revenue_by_subcategory["sales"].to_i,
+      "non_op_income" => revenue_by_subcategory["non_op_income"].to_i,
+      "special_gain"  => revenue_by_subcategory["special_gain"].to_i
     }
 
-    @exp_breakdown = {
-      "cogs"           => exp_by_sub["cogs"].to_i,
-      "sganda"         => exp_by_sub["sganda"].to_i,
-      "non_op_expense" => exp_by_sub["non_op_expense"].to_i,
-      "special_loss"   => exp_by_sub["special_loss"].to_i,
-      "tax"            => exp_by_sub["tax"].to_i
+    @expense_totals = {
+      "cogs"           => expense_by_subcategory["cogs"].to_i,
+      "sganda"         => expense_by_subcategory["sganda"].to_i,
+      "non_op_expense" => expense_by_subcategory["non_op_expense"].to_i,
+      "special_loss"   => expense_by_subcategory["special_loss"].to_i,
+      "tax"            => expense_by_subcategory["tax"].to_i
     }
 
-    sales          = @rev_breakdown["sales"]
-    non_op_income  = @rev_breakdown["non_op_income"]
-    special_gain   = @rev_breakdown["special_gain"]
-    cogs           = @exp_breakdown["cogs"]
-    sganda         = @exp_breakdown["sganda"]
-    non_op_expense = @exp_breakdown["non_op_expense"]
-    special_loss   = @exp_breakdown["special_loss"]
-    tax            = @exp_breakdown["tax"]
+    sales          = @revenue_totals["sales"]
+    non_op_income  = @revenue_totals["non_op_income"]
+    special_gain   = @revenue_totals["special_gain"]
+    cogs           = @expense_totals["cogs"]
+    sganda         = @expense_totals["sganda"]
+    non_op_expense = @expense_totals["non_op_expense"]
+    special_loss   = @expense_totals["special_loss"]
+    tax            = @expense_totals["tax"]
 
     @gross_profit      = sales - cogs
     @operating_income  = @gross_profit - sganda
@@ -47,21 +45,21 @@ class Reports::IncomeStatementController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        csv = CSV.generate(force_quotes: true) do |c|
-          c << %w[項目 金額]
-          c << [ "売上高", sales ]
-          c << [ "売上原価", cogs ]
-          c << [ "売上総利益", @gross_profit ]
-          c << [ "販売費及び一般管理費", sganda ]
-          c << [ "営業利益", @operating_income ]
-          c << [ "営業外収益", non_op_income ]
-          c << [ "営業外費用", non_op_expense ]
-          c << [ "経常利益", @ordinary_income ]
-          c << [ "特別利益", special_gain ]
-          c << [ "特別損失", special_loss ]
-          c << [ "税引前当期純利益", @income_before_tax ]
-          c << [ "税等", tax ]
-          c << [ "当期純利益", @net_income ]
+        csv = CSV.generate(force_quotes: true) do |csv_builder|
+          csv_builder << %w[項目 金額]
+          csv_builder << [ "売上高", sales ]
+          csv_builder << [ "売上原価", cogs ]
+          csv_builder << [ "売上総利益", @gross_profit ]
+          csv_builder << [ "販売費及び一般管理費", sganda ]
+          csv_builder << [ "営業利益", @operating_income ]
+          csv_builder << [ "営業外収益", non_op_income ]
+          csv_builder << [ "営業外費用", non_op_expense ]
+          csv_builder << [ "経常利益", @ordinary_income ]
+          csv_builder << [ "特別利益", special_gain ]
+          csv_builder << [ "特別損失", special_loss ]
+          csv_builder << [ "税引前当期純利益", @income_before_tax ]
+          csv_builder << [ "税等", tax ]
+          csv_builder << [ "当期純利益", @net_income ]
         end
         send_data csv, filename: "income_statement_#{current_period.accounting_year}.csv", type: "text/csv"
       end

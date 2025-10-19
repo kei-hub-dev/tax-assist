@@ -1,6 +1,4 @@
-# app/controllers/accounts_controller.rb
 class AccountsController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_account, only: [ :show, :edit, :update, :destroy ]
 
   def index
@@ -12,10 +10,11 @@ class AccountsController < ApplicationController
   end
 
   def update_sub_categories
-    raw = params.require(:accounts).permit!
-    ids = raw.keys
-    current_user.accounts.where(id: ids).find_each do |acc|
-      acc.update(sub_category: raw[acc.id.to_s][:sub_category].presence)
+    rows = params.require(:accounts).permit!.to_h
+    ids = rows.keys.map(&:to_i)
+    current_user.accounts.where(id: ids).find_each do |account|
+      value = rows.dig(account.id.to_s, "sub_category").presence
+      account.update(sub_category: value)
     end
     redirect_to accounts_path, notice: "サブ区分を更新しました"
   end
@@ -25,11 +24,11 @@ class AccountsController < ApplicationController
   end
 
   def new
-    @account = current_user.accounts.new
+    @account = current_user.accounts.build
   end
 
   def create
-    @account = current_user.accounts.new(account_params)
+    @account = current_user.accounts.build(account_params)
     if @account.save
       redirect_to accounts_path, notice: "勘定科目を作成しました"
     else

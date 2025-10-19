@@ -1,17 +1,19 @@
+<% content_for :title, "仕訳帳" %>
+
 <div class="page">
   <div class="narrow">
     <h1 class="page-title">仕訳帳</h1>
     <div class="year-banner">選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span></div>
 
-    <div class="table-wrap" style="margin-top:16px;">
+    <div class="table-wrap mt-16">
       <table class="table">
         <thead>
           <tr>
             <th>日付</th>
             <th>伝票No</th>
             <th>勘定科目</th>
-            <th style="white-space:nowrap;">借方</th>
-            <th style="white-space:nowrap;">貸方</th>
+            <th class="nowrap">借方</th>
+            <th class="nowrap">貸方</th>
             <th>メモ</th>
           </tr>
         </thead>
@@ -23,15 +25,15 @@
                   <td><%= e.entry_date %></td>
                   <td><%= e.entry_no %></td>
                   <td><%= l.account&.name %></td>
-                  <td style="text-align:right;"><%= number_with_delimiter(l.dc == "debit"  ? l.amount : 0) %></td>
-                  <td style="text-align:right;"><%= number_with_delimiter(l.dc == "credit" ? l.amount : 0) %></td>
+                  <td class="text-right"><%= number_with_delimiter(l.dc == "debit"  ? l.amount : 0) %></td>
+                  <td class="text-right"><%= number_with_delimiter(l.dc == "credit" ? l.amount : 0) %></td>
                   <td><%= l.memo %></td>
                 </tr>
               <% end %>
             <% end %>
           <% else %>
             <tr>
-              <td colspan="6" style="text-align:center;color:#666;">登録された仕訳はありません</td>
+              <td colspan="6" class="text-center text-muted">登録された仕訳はありません</td>
             </tr>
           <% end %>
         </tbody>
@@ -39,8 +41,8 @@
           <tfoot>
             <tr class="sum-row sum-ok">
               <td colspan="3">合計</td>
-              <td style="text-align:right;"><%= number_with_delimiter(@total_debit) %></td>
-              <td style="text-align:right;"><%= number_with_delimiter(@total_credit) %></td>
+              <td class="text-right"><%= number_with_delimiter(@total_debit) %></td>
+              <td class="text-right"><%= number_with_delimiter(@total_credit) %></td>
               <td></td>
             </tr>
           </tfoot>
@@ -48,9 +50,9 @@
       </table>
     </div>
 
-    <div class="actions" style="margin-top:12px;">
+    <div class="actions mt-12">
       <%= link_to "仕訳の登録へ", journal_entries_path, class: "btn btn-sm btn-block" %>
-      <%= link_to "会計メニューに戻る", accounting_menu_path, class: "btn btn-outline btn-sm btn-block" %>
+      <%= link_to "会計メニューに戻る", accounting_menu_path, class: "btn btn-outline btn-sm btn-block mt-8" %>
     </div>
   </div>
 </div>

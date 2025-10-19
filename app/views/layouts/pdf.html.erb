@@ -1,55 +1,47 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8">
-    <title><%= content_for?(:title) ? yield(:title) : "" %></title>
-    <style>
-        html,
-        body {
-            font-family: "Noto Sans CJK JP", "Noto Sans JP", sans-serif;
-            font-size: 12px;
-            color: #111;
-            margin: 0;
-            padding: 24px;
-        }
+  <meta charset="UTF-8">
+  <title><%= content_for?(:title) ? yield(:title) : "Report" %></title>
+  <style>
+    @page { margin: 24px; }
+    html, body {
+      font-family: "Noto Sans CJK JP","Noto Sans JP",sans-serif;
+      font-size: 12px; color: #111; margin: 0; padding: 24px;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    h1.page-title { font-size: 18px; margin: 0 0 12px; font-weight: 700; }
 
-        h1 {
-            font-size: 18px;
-            margin: 0 0 12px;
-            font-weight: 700;
-        }
+    /* meta/info */
+    .meta { font-size: 11px; color: #555; margin-bottom: 12px; }
 
-        .meta {
-            font-size: 11px;
-            color: #555;
-            margin-bottom: 12px;
-        }
+    /* year banner */
+    .year-banner {
+      margin: 8px 0 0; padding: 6px 10px; background: #f7f7f9;
+      border: 1px solid #e5e7eb; border-radius: 6px;
+    }
+    .year-pill {
+      display: inline-block; margin-left: 6px; padding: 0 6px;
+      background: #111; color: #fff; border-radius: 999px; font-weight: 600;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    /* tables */
+    table, .table { width: 100%; border-collapse: collapse; }
+    thead th { background: #f7f7f7; }
+    th, td { padding: 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    .sum-row { font-weight: 600; background: #fafafa; }
 
-        th,
-        td {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-        }
-
-        thead th {
-            background: #f7f7f7;
-        }
-
-        td.num {
-            text-align: right;
-        }
-    </style>
+    /* utilities (HTMLと揃える) */
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .text-muted { color: #666; }
+    .nowrap { white-space: nowrap; }
+    .mt-8  { margin-top: 8px; }
+    .mt-12 { margin-top: 12px; }
+    .mt-16 { margin-top: 16px; }
+  </style>
 </head>
-
 <body>
-    <%= yield %>
+  <%= yield %>
 </body>
-
 </html>

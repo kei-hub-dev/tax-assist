@@ -1,28 +1,27 @@
 class Reports::TrialBalanceController < ApplicationController
-  before_action :authenticate_user!
   before_action :require_accounting_period!
 
   def show
     period_id = current_period.id
-    accounts = current_user.accounts.select(:id, :name).to_h { |a| [a.id, a.name] }
+    accounts  = current_user.accounts.pluck(:id, :name).to_h
 
     base = JournalEntryLine.joins(:journal_entry).where(journal_entries: { accounting_period_id: period_id })
     debits  = base.where(dc: "debit").group(:account_id).sum(:amount)
     credits = base.where(dc: "credit").group(:account_id).sum(:amount)
 
-    ids = (debits.keys + credits.keys).uniq
+    ids = debits.keys | credits.keys
 
     rows = ids.map do |account_id|
-      d = debits[account_id].to_i
-      c = credits[account_id].to_i
-      { "account_name" => accounts[account_id] || "(不明)", "debit" => d, "credit" => c, "balance" => d - c }
+      debit  = debits[account_id].to_i
+      credit = credits[account_id].to_i
+      { account_name: accounts[account_id], debit: debit, credit: credit, balance: debit - credit }
     end
 
-    rows.reject! { |r| r["debit"].to_i.zero? && r["credit"].to_i.zero? }
+    rows.reject! { |row| row[:debit].zero? && row[:credit].zero? }
 
-    @rows = rows.sort_by { |r| r["account_name"].to_s }
-    @total_debit  = @rows.sum { |r| r["debit"].to_i }
-    @total_credit = @rows.sum { |r| r["credit"].to_i }
+    @rows         = rows.sort_by { |row| row[:account_name].to_s }
+    @total_debit  = @rows.sum { |row| row[:debit] }
+    @total_credit = @rows.sum { |row| row[:credit] }
     @balanced     = (@total_debit == @total_credit)
   end
 end

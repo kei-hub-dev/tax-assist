@@ -1,44 +1,47 @@
+<% content_for :title, "勘定科目マスタ" %>
+
 <div class="page">
-    <h1 class="page-title">勘定科目マスタ</h1>
+  <h1 class="page-title">勘定科目マスタ</h1>
 
-    <div class="actions" style="margin-bottom:12px;">
-        <%= link_to "新規追加", new_account_path, class: "btn btn-sm" %>
-        <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm" %>
-    </div>
+  <div class="actions mb-12">
+    <%= link_to "新規追加", new_account_path, class: "btn btn-sm" %>
+    <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm" %>
+  </div>
 
-    <div class="table-wrap">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="text-align:left;">科目名</th>
-                    <th style="text-align:left;">区分</th>
-                    <th style="text-align:left;">サブ区分</th>
-                    <th style="width:180px; text-align:right;">操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if @accounts.any? %>
-                <% subs = I18n.t("accounts.sub_categories") %>
-                <% @accounts.each do |a| %>
-                <tr>
-                    <td><%= a.name %></td>
-                    <td><%= I18n.t("accounts.categories.#{a.category}", default: a.category) %></td>
-                    <td><%= subs.dig(a.category, a.sub_category) || "-" %></td>
-                    <td class="actions-cell" style="text-align:right; white-space:nowrap;">
-                        <%= link_to "編集", edit_account_path(a), class: "btn btn-sm btn-inline" %>
-                        <%= button_to "削除", account_path(a),
+  <% subs = I18n.t("accounts.sub_categories") %>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>科目名</th>
+          <th>区分</th>
+          <th>サブ区分</th>
+          <th class="actions-col text-right">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @accounts.any? %>
+          <% @accounts.each do |account| %>
+            <tr>
+              <td><%= account.name %></td>
+              <td><%= I18n.t("accounts.categories.#{account.category}", default: account.category) %></td>
+              <td><%= subs.dig(account.category.to_s, account.sub_category.to_s) || "-" %></td>
+              <td class="actions-cell nowrap">
+                <%= link_to "編集", edit_account_path(account), class: "btn btn-sm btn-inline" %>
+                <%= button_to "削除", account_path(account),
                       method: :delete,
                       form: { data: { turbo_confirm: "削除しますか？" } },
                       class: "btn btn-outline btn-sm btn-inline" %>
-                    </td>
-                </tr>
-                <% end %>
-                <% else %>
-                <tr>
-                    <td colspan="4" style="text-align:center;color:#666;">登録された勘定科目はありません</td>
-                </tr>
-                <% end %>
-            </tbody>
-        </table>
-    </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="4" class="text-center text-muted">登録された勘定科目はありません</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
