@@ -1,33 +1,37 @@
-<div class="auth">
-    <h1>ユーザー登録</h1>
+<% content_for :title, "ユーザー登録" %>
+
+<div class="page">
+  <div class="auth">
+    <h2 class="auth-title">ユーザー登録</h2>
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "form" }) do |f| %>
-    <%= render "devise/shared/error_messages", resource: resource %>
+      <%= render "shared/error_messages", object: resource %>
 
-    <div class="field">
+      <div class="field">
         <%= f.label :email, "メールアドレス" %>
-        <%= f.email_field :email, autocomplete: "email", placeholder: "name@example.com" %>
-    </div>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "name@example.com" %>
+      </div>
 
-    <div class="field">
+      <div class="field">
         <%= f.label :password, "パスワード" %>
         <% if @minimum_password_length %>
-        <small>(最小 <%= @minimum_password_length %> 文字)</small>
+          <small>(最小 <%= @minimum_password_length %> 文字)</small>
         <% end %>
         <%= f.password_field :password, autocomplete: "new-password", placeholder: "Password" %>
-    </div>
+      </div>
 
-    <div class="field">
+      <div class="field">
         <%= f.label :password_confirmation, "確認用パスワード" %>
         <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Password" %>
-    </div>
+      </div>
 
-    <div class="actions">
+      <div class="actions">
         <%= f.submit "登録", class: "btn" %>
-    </div>
+      </div>
     <% end %>
 
     <div class="links">
-        <%= link_to "ログインへ戻る", new_session_path(resource_name) %>
+      <%= link_to "ログインへ戻る", new_session_path(resource_name) %>
     </div>
+  </div>
 </div>

@@ -1,0 +1,87 @@
+<% content_for :title, "損益計算書" %>
+
+<div class="page">
+  <div class="narrow">
+    <h1 class="page-title">損益計算書</h1>
+    <div class="year-banner">選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span></div>
+
+    <div class="table-wrap mt-16">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th class="text-right">金額</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>売上高</td>
+            <td class="text-right"><%= number_with_delimiter(@revenue_totals["sales"]) %></td>
+          </tr>
+          <tr>
+            <td>売上原価</td>
+            <td class="text-right"><%= number_with_delimiter(@expense_totals["cogs"]) %></td>
+          </tr>
+          <tr class="sum-row">
+            <td>売上総利益</td>
+            <td class="text-right"><%= number_with_delimiter(@gross_profit) %></td>
+          </tr>
+
+          <tr>
+            <td>販売費及び一般管理費</td>
+            <td class="text-right"><%= number_with_delimiter(@expense_totals["sganda"]) %></td>
+          </tr>
+          <tr class="sum-row">
+            <td>営業利益</td>
+            <td class="text-right"><%= number_with_delimiter(@operating_income) %></td>
+          </tr>
+
+          <tr>
+            <td>営業外収益</td>
+            <td class="text-right"><%= number_with_delimiter(@revenue_totals["non_op_income"]) %></td>
+          </tr>
+          <tr>
+            <td>営業外費用</td>
+            <td class="text-right"><%= number_with_delimiter(@expense_totals["non_op_expense"]) %></td>
+          </tr>
+          <tr class="sum-row">
+            <td>経常利益</td>
+            <td class="text-right"><%= number_with_delimiter(@ordinary_income) %></td>
+          </tr>
+
+          <tr>
+            <td>特別利益</td>
+            <td class="text-right"><%= number_with_delimiter(@revenue_totals["special_gain"]) %></td>
+          </tr>
+          <tr>
+            <td>特別損失</td>
+            <td class="text-right"><%= number_with_delimiter(@expense_totals["special_loss"]) %></td>
+          </tr>
+          <tr class="sum-row">
+            <td>税引前当期純利益</td>
+            <td class="text-right"><%= number_with_delimiter(@income_before_tax) %></td>
+          </tr>
+
+          <tr>
+            <td>税等</td>
+            <td class="text-right"><%= number_with_delimiter(@expense_totals["tax"]) %></td>
+          </tr>
+          <tr class="sum-row">
+            <td>当期純利益</td>
+            <td class="text-right"><%= number_with_delimiter(@net_income) %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="actions mt-12">
+      <div>ダウンロード:
+        <%= link_to "CSV", reports_income_statement_path(format: :csv) %> /
+        <%= link_to "PDF", reports_income_statement_path(format: :pdf) %>
+      </div>
+      <div class="hstack mt-8">
+        <%= link_to "会計メニューに戻る", accounting_menu_path, class: "btn btn-outline btn-sm" %>
+      </div>
+    </div>
+  </div>
+</div>

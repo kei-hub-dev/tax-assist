@@ -1,10 +1,14 @@
+<% content_for :title, "仕訳 新規登録/編集" %>
 <div class="page">
   <div class="narrow">
     <h1 class="page-title">仕訳 新規登録/編集</h1>
     <div class="year-banner">選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span></div>
 
-    <div class="menu-group" style="margin-top:16px;">
+    <div class="menu-group mt-16">
       <h2 class="group-title">新規登録</h2>
+
+      <%= render "shared/error_messages", object: @entry %>
+
       <%= form_with model: @entry, url: journal_entries_path, method: :post, local: true, html: { class: "form" } do |f| %>
         <div class="field">
           <label for="journal_entry_entry_date">日付</label>
@@ -19,43 +23,42 @@
       <% end %>
     </div>
 
-    <div class="table-wrap" style="margin-top:16px;">
-    <table class="table">
+    <div class="table-wrap mt-16">
+      <table class="table">
         <thead>
-        <tr>
+          <tr>
             <th>伝票No</th>
             <th>日付</th>
             <th class="actions-col">操作</th>
-        </tr>
+          </tr>
         </thead>
         <tbody>
-        <% if @entries.any? %>
-            <% @entries.each do |e| %>
-            <tr>
-                <td><%= e.entry_no %></td>
-                <td><%= e.entry_date %></td>
+          <% if @entries.any? %>
+            <% @entries.each do |entry| %>
+              <tr>
+                <td><%= entry.entry_no %></td>
+                <td><%= entry.entry_date %></td>
                 <td class="actions-cell">
-                <div class="action-buttons">
-                    <%= link_to "編集", edit_journal_entry_path(e), class: "btn btn-sm" %>
-                    <%= button_to "削除", journal_entry_path(e),
-                        method: :delete,
-                        form: { data: { turbo_confirm: "削除しますか？" } },
-                        class: "btn btn-outline btn-sm" %>
-                </div>
+                  <div class="action-buttons">
+                    <%= link_to "編集", edit_journal_entry_path(entry), class: "btn btn-sm" %>
+                    <%= button_to "削除", journal_entry_path(entry),
+                          method: :delete,
+                          form: { data: { turbo_confirm: "削除しますか？" } },
+                          class: "btn btn-outline btn-sm" %>
+                  </div>
                 </td>
-            </tr>
+              </tr>
             <% end %>
-        <% else %>
+          <% else %>
             <tr>
-            <td colspan="3" style="text-align:center;color:#666;">登録された仕訳はありません</td>
+              <td colspan="3" class="text-center text-muted">登録された仕訳はありません</td>
             </tr>
-        <% end %>
+          <% end %>
         </tbody>
-    </table>
+      </table>
     </div>
 
-
-    <div class="actions" style="margin-top:12px;">
+    <div class="actions mt-12">
       <%= link_to "会計メニューに戻る", accounting_menu_path, class: "btn btn-outline btn-sm btn-block" %>
     </div>
   </div>

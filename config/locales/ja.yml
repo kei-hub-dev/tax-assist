@@ -1,4 +1,12 @@
 ja:
+  errors:
+    format: "%{message}"
+    messages:
+      blank: を入力してください
+      inclusion: は一覧に含まれていません
+      not_saved: "%{count}件のエラーにより保存できませんでした"
+      confirmation: が一致しません
+
   accounts:
     categories:
       asset: 資産
@@ -6,6 +14,17 @@ ja:
       equity: 純資産
       revenue: 収益
       expense: 費用
+    sub_categories:
+      revenue:
+        sales: 売上高
+        non_op_income: 営業外収益
+        special_gain: 特別利益
+      expense:
+        cogs: 売上原価
+        sganda: 販売費及び一般管理費
+        non_op_expense: 営業外費用
+        special_loss: 特別損失
+        tax: 税等
 
   devise:
     failure:
@@ -16,25 +35,46 @@ ja:
       signed_out: ログアウトしました
     registrations:
       signed_up: 登録が完了しました
+
   activerecord:
+    models:
+      journal_entry: 仕訳
+      journal_entry_line: 仕訳明細
+
     attributes:
+      journal_entry:
+        entry_date: 日付
+      journal_entry_line:
+        account: 勘定科目
+        account_id: 勘定科目
+        dc: 借貸区分
+        amount: 金額
+        memo: 摘要
       account:
         name: 科目名
         category: 区分
       user:
         business_name: 屋号（事業者名）
+
     errors:
       models:
-        account:
+        journal_entry:
           attributes:
-            name:
-              blank: を入力してください
-            category:
-              blank: を入力してください
-              inclusion: は正しい値を選択してください
-  errors:
-    messages:
-      blank: を入力してください
-      inclusion: は一覧に含まれていません
-      not_saved: "%{count}件のエラーにより保存できませんでした"
-      confirmation: "が一致しません"
+            "journal_entry_lines.account":
+              required: 勘定科目を入力してください
+            "journal_entry_lines.dc":
+              inclusion: 借貸区分は 借方 か 貸方 を選択してください
+            "journal_entry_lines.amount":
+              greater_than: 金額は%{count}より大きい値にしてください
+        journal_entry_line:
+          attributes:
+            account:
+              required: 勘定科目を入力してください
+            account_id:
+              required: 勘定科目を入力してください
+            dc:
+              inclusion: 借貸区分は 借方 か 貸方 を選択してください
+            amount:
+              not_a_number: 金額は数値で入力してください
+              only_integer: 金額は整数で入力してください
+              greater_than: 金額は%{count}より大きい値にしてください

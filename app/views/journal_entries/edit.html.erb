@@ -1,6 +1,10 @@
+<% content_for :title, "仕訳 編集" %>
+
 <div class="page">
   <div class="narrow">
     <h1 class="page-title">仕訳 編集</h1>
+
+    <%= render "shared/error_messages", object: @entry %>
 
     <%= form_with model: @entry, local: true, html: { class: "form" } do |f| %>
       <div class="field">
@@ -13,7 +17,6 @@
         <%= f.date_field :entry_date %>
       </div>
 
-      <% @entry.journal_entry_lines.build if @entry.journal_entry_lines.empty? %>
       <%= render partial: "lines_fields", locals: { f: f } %>
 
       <div class="actions vstack">

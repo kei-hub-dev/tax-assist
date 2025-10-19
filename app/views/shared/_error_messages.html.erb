@@ -1,8 +1,8 @@
-<% if object.errors.any? %>
-  <div class="flash alert" style="display:block;">
-    <ul style="margin:0; padding-left:18px; text-align:left;">
-      <% object.errors.full_messages.each do |m| %>
-        <li><%= m %></li>
+<% if defined?(object) && object && object.errors.any? %>
+  <div class="flash alert">
+    <ul class="m-0 pl-18 text-left" aria-live="polite">
+      <% object.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
       <% end %>
     </ul>
   </div>

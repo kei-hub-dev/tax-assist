@@ -1,17 +1,60 @@
 <%= render "shared/error_messages", object: @account %>
+
 <%= form_with model: @account, local: true, html: { class: "form" } do |f| %>
-<div class="field">
-    <label for="account_name">科目名</label>
+  <div class="field">
+    <%= f.label :name, "科目名" %>
     <%= f.text_field :name %>
-</div>
-<div class="field">
-    <label for="account_category">区分</label>
-    <%= f.select :category,
-      I18n.t("accounts.categories").map { |k, v| [v, k] },
-      include_blank: "選択してください" %>
-</div>
-<div class="actions vstack">
+  </div>
+
+  <div class="field">
+    <%= f.label :category, "区分" %>
+    <%= f.select :category, I18n.t("accounts.categories").map { |k, v| [v, k] }, include_blank: "選択してください" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :sub_category, "サブ区分" %>
+    <% subs = I18n.t("accounts.sub_categories") %>
+    <%= f.select :sub_category, [], include_blank: "指定なし", id: "account_sub_category", data: { subs: subs.to_json } %>
+  </div>
+
+  <script>
+    (function() {
+      var cat = document.getElementById('account_category') || document.querySelector('[name="account[category]"]');
+      var sub = document.getElementById('account_sub_category');
+      var subs = JSON.parse(sub.dataset.subs || '{}');
+
+      function rebuild() {
+        var v = cat ? cat.value : '';
+        var map = subs[v] || {};
+        while (sub.firstChild) sub.removeChild(sub.firstChild);
+        var blank = document.createElement('option');
+        blank.value = '';
+        blank.textContent = '指定なし';
+        sub.appendChild(blank);
+        Object.keys(map).forEach(function(k) {
+          var o = document.createElement('option');
+          o.value = k;
+          o.textContent = map[k];
+          sub.appendChild(o);
+        });
+        var wrap = sub.closest('.field');
+        if (wrap) wrap.style.display = (v === 'revenue' || v === 'expense') ? '' : 'none';
+        if (!(v === 'revenue' || v === 'expense')) sub.value = '';
+      }
+
+      sub.setAttribute('data-current', '<%= j(@account.sub_category.to_s) %>');
+      rebuild();
+      if (sub.dataset.current) sub.value = sub.dataset.current;
+
+      if (cat) cat.addEventListener('change', function() {
+        sub.removeAttribute('data-current');
+        rebuild();
+      });
+    })();
+  </script>
+
+  <div class="actions vstack">
     <%= f.submit "保存", class: "btn btn-sm btn-block" %>
     <%= link_to "戻る", accounts_path, class: "btn btn-outline btn-sm btn-block" %>
-</div>
+  </div>
 <% end %>

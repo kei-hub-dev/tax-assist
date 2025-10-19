@@ -1,0 +1,54 @@
+<% content_for :title, "確認ページ" %>
+
+<div class="page">
+  <div class="narrow">
+    <h1 class="page-title">確認ページ</h1>
+    <div class="year-banner">
+      選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span>
+    </div>
+
+    <div class="table-wrap mt-16">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>勘定科目</th>
+            <th class="text-right">借方</th>
+            <th class="text-right">貸方</th>
+            <th class="text-right">差額（借方－貸方）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @rows.any? %>
+            <% @rows.each do |r| %>
+              <tr>
+                <td><%= r[:account_name] || r["account_name"] %></td>
+                <td class="text-right"><%= number_with_delimiter(r[:debit]   || r["debit"]) %></td>
+                <td class="text-right"><%= number_with_delimiter(r[:credit]  || r["credit"]) %></td>
+                <td class="text-right"><%= number_with_delimiter(r[:balance] || r["balance"]) %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="4" class="text-center text-muted">対象データがありません</td>
+            </tr>
+          <% end %>
+        </tbody>
+        <% if @rows.any? %>
+          <tfoot>
+            <tr class="sum-row <%= @balanced ? 'sum-ok' : 'sum-ng' %>">
+              <td>合計</td>
+              <td class="text-right"><%= number_with_delimiter(@total_debit) %></td>
+              <td class="text-right"><%= number_with_delimiter(@total_credit) %></td>
+              <td class="text-right"><%= number_with_delimiter(@total_debit - @total_credit) %></td>
+            </tr>
+          </tfoot>
+        <% end %>
+      </table>
+    </div>
+
+    <div class="actions mt-12">
+      <%= link_to "仕訳帳を開く", journal_book_path, class: "btn btn-sm btn-block" %>
+      <%= link_to "会計メニューに戻る", accounting_menu_path, class: "btn btn-outline btn-sm btn-block mt-8" %>
+    </div>
+  </div>
+</div>

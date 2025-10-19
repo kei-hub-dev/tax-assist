@@ -4,8 +4,9 @@ class ApplicationController < ActionController::Base
   helper_method :current_period
 
   def current_period
-    return unless session[:accounting_period_id] && current_user
-    @current_period ||= current_user.accounting_periods.find_by(id: session[:accounting_period_id])
+    pid = session[:accounting_period_id]
+    return unless pid && current_user
+    @current_period ||= current_user.accounting_periods.find_by(id: pid)
   end
 
   def require_accounting_period!

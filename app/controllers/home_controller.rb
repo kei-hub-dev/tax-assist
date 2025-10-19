@@ -1,11 +1,9 @@
 class HomeController < ApplicationController
-  before_action :authenticate_user!
-
   def index
-    y = Date.current.year
-    periods = current_user.accounting_periods.where("accounting_year BETWEEN ? AND ?", 2024, y)
-    @accounting_periods = periods.sort_by { |p| [ p.accounting_year == y ? 0 : 1, -p.accounting_year ] }
-    @selected_period_id = session[:accounting_period_id] || periods.find_by(accounting_year: y)&.id
+    year = Date.current.year
+    periods = current_user.accounting_periods.where(accounting_year: 2024..year)
+    @accounting_periods = periods.sort_by { |period| [ period.accounting_year == year ? 0 : 1, -period.accounting_year ] }
+    @selected_period_id = session[:accounting_period_id] || periods.find_by(accounting_year: year)&.id
   end
 
   def select_accounting_period

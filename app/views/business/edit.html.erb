@@ -2,6 +2,8 @@
     <div class="auth wide">
         <h1 class="page-title">事業者情報</h1>
 
+        <%= render "shared/error_messages", object: current_user %>
+
         <%= form_with model: current_user, url: business_path, method: :patch, local: true, html: { class: "form" } do |f| %>
         <div class="field">
             <label for="user_business_name">屋号</label>

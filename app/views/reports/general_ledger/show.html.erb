@@ -1,0 +1,41 @@
+<% content_for :title, "総勘定元帳（集計）" %>
+
+<div class="page">
+  <div class="narrow">
+    <h1 class="page-title">総勘定元帳（集計）</h1>
+    <div class="year-banner">選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span></div>
+
+    <div class="table-wrap mt-16">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>勘定科目</th>
+            <th class="text-right">借方合計</th>
+            <th class="text-right">貸方合計</th>
+            <th class="text-right">差額（借方−貸方）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @rows.each do |row| %>
+            <tr>
+              <td><%= row[:account_name] %></td>
+              <td class="text-right"><%= amt(row[:debit]) %></td>
+              <td class="text-right"><%= amt(row[:credit]) %></td>
+              <td class="text-right"><%= amt(row[:balance]) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="actions mt-12">
+      <div>ダウンロード:
+        <%= link_to "CSV", reports_general_ledger_path(format: :csv) %> /
+        <%= link_to "PDF", reports_general_ledger_path(format: :pdf) %>
+      </div>
+      <div class="hstack mt-8">
+        <%= link_to "会計メニューに戻る", accounting_menu_path, class: "btn btn-outline btn-sm" %>
+      </div>
+    </div>
+  </div>
+</div>
