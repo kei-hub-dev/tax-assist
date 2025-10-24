@@ -31,7 +31,7 @@
                 <%= link_to "編集", edit_account_path(account), class: "btn btn-sm btn-inline" %>
                 <%= button_to "削除", account_path(account),
                       method: :delete,
-                      form: { data: { turbo_confirm: "削除しますか？" } },
+                      form: { class: "inline", data: { turbo_confirm: "削除しますか？" } },
                       class: "btn btn-outline btn-sm btn-inline" %>
               </td>
             </tr>

@@ -27,21 +27,24 @@ DEFAULT_ACCOUNTS = [
   { name: "元入金",     category: "equity" },
 
   # 収益
-  { name: "売上高",     category: "revenue" },
-  { name: "受取利息",   category: "revenue" },
+  { name: "売上高",     category: "revenue", sub_category: "sales" },
+  { name: "受取利息",   category: "revenue", sub_category: "non_op_income" },
 
   # 費用
-  { name: "仕入高",     category: "expense" },
-  { name: "旅費交通費", category: "expense" },
-  { name: "通信費",     category: "expense" },
-  { name: "消耗品費",   category: "expense" },
-  { name: "支払手数料", category: "expense" },
-  { name: "水道光熱費", category: "expense" },
-  { name: "地代家賃",   category: "expense" }
+  { name: "仕入高",     category: "expense", sub_category: "cogs" },
+  { name: "旅費交通費", category: "expense", sub_category: "sganda" },
+  { name: "通信費",     category: "expense", sub_category: "sganda" },
+  { name: "消耗品費",   category: "expense", sub_category: "sganda" },
+  { name: "支払手数料", category: "expense", sub_category: "sganda" },
+  { name: "水道光熱費", category: "expense", sub_category: "sganda" },
+  { name: "地代家賃",   category: "expense", sub_category: "sganda" }
 ]
 
-User.find_each do |u|
+User.find_each do |user|
   DEFAULT_ACCOUNTS.each do |attrs|
-    Account.find_or_create_by!(user: u, name: attrs[:name]) { |a| a.category = attrs[:category] }
+    account = Account.find_or_initialize_by(user: user, name: attrs[:name])
+    account.category = attrs[:category]
+    account.sub_category = attrs[:sub_category] if attrs[:sub_category].present?
+    account.save!
   end
 end
