@@ -87,7 +87,7 @@ class Reports::IncomeStatementController < ApplicationController
           launch_args: %w[--no-sandbox --disable-dev-shm-usage --disable-gpu]
         ).to_pdf
         send_data pdf,
-          filename: "balance_sheet_#{current_period.accounting_year}.pdf",
+          filename: "income_statement_#{current_period.accounting_year}.pdf",
           type: "application/pdf",
           disposition: "attachment"
       end
