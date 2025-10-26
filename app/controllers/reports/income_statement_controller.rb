@@ -9,9 +9,9 @@ class Reports::IncomeStatementController < ApplicationController
     base = JournalEntryLine.joins(:journal_entry).where(journal_entries: { accounting_period_id: period_id })
 
     revenue_by_subcategory = base.where(dc: "credit").joins(:account).where(accounts: { category: "revenue" })
-                                .group("COALESCE(accounts.sub_category, 'sales')").sum(:amount)
+                                 .group("COALESCE(accounts.sub_category, 'sales')").sum(:amount)
     expense_by_subcategory = base.where(dc: "debit").joins(:account).where(accounts: { category: "expense" })
-                                .group("COALESCE(accounts.sub_category, 'sganda')").sum(:amount)
+                                 .group("COALESCE(accounts.sub_category, 'sganda')").sum(:amount)
 
     @revenue_totals = {
       "sales"         => revenue_by_subcategory["sales"].to_i,
@@ -42,6 +42,21 @@ class Reports::IncomeStatementController < ApplicationController
     @income_before_tax = @ordinary_income + special_gain - special_loss
     @net_income        = @income_before_tax - tax
 
+    revenue_order = %w[sales non_op_income special_gain]
+    expense_order = %w[cogs sganda non_op_expense special_loss tax]
+
+    @revenue_breakdown = revenue_by_subcategory
+      .transform_keys { |k| k.to_s.presence || "sales" }
+      .map { |sub_key, amount| amount_i = amount.to_i; next if amount_i.zero?; { key: sub_key, label: I18n.t("accounts.sub_categories.revenue.#{sub_key}", default: sub_key), amount: amount_i } }
+      .compact
+      .sort_by { |h| [ revenue_order.index(h[:key]) || 99, h[:key] ] }
+
+    @expense_breakdown = expense_by_subcategory
+      .transform_keys { |k| k.to_s.presence || "sganda" }
+      .map { |sub_key, amount| amount_i = amount.to_i; next if amount_i.zero?; { key: sub_key, label: I18n.t("accounts.sub_categories.expense.#{sub_key}", default: sub_key), amount: amount_i } }
+      .compact
+      .sort_by { |h| [ expense_order.index(h[:key]) || 99, h[:key] ] }
+
     respond_to do |format|
       format.html
       format.csv do
@@ -66,7 +81,8 @@ class Reports::IncomeStatementController < ApplicationController
       format.pdf do
         html = render_to_string(action: :show, layout: "pdf", formats: [ :html ])
         pdf  = Grover.new(html).to_pdf
-        send_data pdf, filename: "income_statement_#{current_period.accounting_year}.pdf", type: "application/pdf", disposition: "attachment"
+        send_data pdf, filename: "income_statement_#{current_period.accounting_year}.pdf",
+                  type: "application/pdf", disposition: "attachment"
       end
     end
   end

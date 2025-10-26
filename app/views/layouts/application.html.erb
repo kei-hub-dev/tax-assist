@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <title><%= content_for?(:title) ? yield(:title) : "Tax Assist" %></title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-  <%= yield :head %>
-  <link rel="manifest" href="<%= pwa_manifest_path %>">
-  <link rel="icon" href="/icon.png" type="image/png">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/icon.png">
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <meta charset="UTF-8">
+    <title><%= content_for?(:title) ? yield(:title) : "Tax Assist" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="manifest" href="<%= pwa_manifest_path %>">
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 </head>
 
 <body class="<%= 'auth-layout' if devise_controller? || controller_path.start_with?('account') %>">
-  <div id="flash-messages">
-    <% flash.each do |type, message| %>
-      <div class="flash <%= type %>"><%= message %></div>
+    <% if user_signed_in? %>
+    <div style="position:fixed;top:12px;right:16px;z-index:1000">
+        <%= button_to "ログアウト",
+          destroy_user_session_path,
+          method: :delete,
+          form: { class: "inline", style: "display:inline;margin:0;padding:0;background:none;border:0;", data: { turbo_confirm: "ログアウトしますか？" } },
+          class: "btn btn-outline btn-sm" %>
+    </div>
     <% end %>
-  </div>
 
-  <%= yield %>
+    <div id="flash-messages">
+        <% flash.each do |type, message| %>
+        <div class="flash <%= type %>"><%= message %></div>
+        <% end %>
+    </div>
+
+    <%= yield %>
 </body>
+
 </html>

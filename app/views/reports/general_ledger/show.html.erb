@@ -9,6 +9,7 @@
       <table class="table">
         <thead>
           <tr>
+            <th>カテゴリ</th>
             <th>勘定科目</th>
             <th class="text-right">借方合計</th>
             <th class="text-right">貸方合計</th>
@@ -18,6 +19,7 @@
         <tbody>
           <% @rows.each do |row| %>
             <tr>
+              <td><%= I18n.t("accounts.categories.#{row[:category]}", default: row[:category]) %></td>
               <td><%= row[:account_name] %></td>
               <td class="text-right"><%= amt(row[:debit]) %></td>
               <td class="text-right"><%= amt(row[:credit]) %></td>
@@ -25,7 +27,19 @@
             </tr>
           <% end %>
         </tbody>
+        <tfoot>
+          <tr>
+            <th>合計</th>
+            <th></th>
+            <th class="text-right"><%= amt(@total_debit) %></th>
+            <th class="text-right"><%= amt(@total_credit) %></th>
+            <th class="text-right"><%= amt(@total_balance) %></th>
+          </tr>
+        </tfoot>
       </table>
+      <div class="mt-2 text-sm">
+        <%= @balanced ? "貸借一致: ✓" : "貸借不一致" %>
+      </div>
     </div>
 
     <div class="actions mt-12">

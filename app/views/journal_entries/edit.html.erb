@@ -17,6 +17,11 @@
         <%= f.date_field :entry_date %>
       </div>
 
+      <div class="field mt-3">
+        <%= f.label :description, "概要" %>
+        <%= f.text_field :description, class: "input", placeholder: "例）備品購入／振込手数料 など" %>
+      </div>
+
       <%= render partial: "lines_fields", locals: { f: f } %>
 
       <div class="actions vstack">

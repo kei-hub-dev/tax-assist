@@ -15,6 +15,13 @@
           <%= f.date_field :entry_date %>
         </div>
 
+        <!-- 追加：概要（description） -->
+        <div class="field mt-3">
+          <%= f.label :description, "概要" %>
+          <%= f.text_field :description, class: "input", placeholder: "例）備品購入／振込手数料 など" %>
+        </div>
+        <!-- /追加 -->
+
         <%= render partial: "lines_fields", locals: { f: f } %>
 
         <div class="actions vstack">
@@ -29,6 +36,7 @@
           <tr>
             <th>伝票No</th>
             <th>日付</th>
+            <th>概要</th> <!-- 追加 -->
             <th class="actions-col">操作</th>
           </tr>
         </thead>
@@ -37,21 +45,39 @@
             <% @entries.each do |entry| %>
               <tr>
                 <td><%= entry.entry_no %></td>
-                <td><%= entry.entry_date %></td>
+
+                <td><%= entry.entry_date.strftime("%Y-%m-%d") %></td>
+
+                <!-- 追加：概要カラム（横に表示） -->
+                <td>
+                  <% if entry.description.present? %>
+                    <span><%= truncate(entry.description, length: 50) %></span>
+                  <% else %>
+                    <span class="text-muted">—</span>
+                  <% end %>
+                </td>
+
                 <td class="actions-cell">
-                  <div class="action-buttons">
-                    <%= link_to "編集", edit_journal_entry_path(entry), class: "btn btn-sm" %>
-                    <%= button_to "削除", journal_entry_path(entry),
+                  <div class="action-buttons"
+                      style="display:flex; gap:.5rem; justify-content:flex-end; align-items:center;">
+                    <%= link_to "編集",
+                          edit_journal_entry_path(entry),
+                          class: "btn btn-sm",
+                          style: "flex:0 0 auto; width:auto; min-width:auto; padding:.375rem .75rem;" %>
+
+                    <%= button_to "削除",
+                          journal_entry_path(entry),
                           method: :delete,
-                          form: { data: { turbo_confirm: "削除しますか？" } },
-                          class: "btn btn-outline btn-sm" %>
+                          form: { style: "display:inline;", data: { turbo_confirm: "削除しますか？" } },
+                          class: "btn btn-outline btn-sm",
+                          style: "flex:0 0 auto; width:auto; min-width:auto; padding:.375rem .75rem;" %>
                   </div>
                 </td>
               </tr>
             <% end %>
           <% else %>
             <tr>
-              <td colspan="3" class="text-center text-muted">登録された仕訳はありません</td>
+              <td colspan="4" class="text-center text-muted">登録された仕訳はありません</td>
             </tr>
           <% end %>
         </tbody>

@@ -1,6 +1,7 @@
 module ApplicationHelper
-  def amt(v)
-    n = v.to_i
-    n.negative? ? "▲ #{number_with_delimiter(n.abs)}" : number_with_delimiter(n)
+  def amt(n)
+    n = n.to_i
+    s = number_with_delimiter(n.abs)
+    n.negative? ? "-#{s}" : s
   end
 end
