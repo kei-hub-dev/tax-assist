@@ -16,4 +16,4 @@ primary_region = "nrt"
   min_machines_running = 0
 
 [deploy]
-   release_command = "bash -lc 'bin/rails assets:precompile db:migrate'"
+   release_command = "bash -lc 'RAILS_ENV=production bin/rails db:seed'"

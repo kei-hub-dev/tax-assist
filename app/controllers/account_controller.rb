@@ -2,8 +2,20 @@ class AccountController < ApplicationController
   def edit; end
 
   def email
-    if current_user.update(email_params)
-      redirect_to authenticated_root_path, notice: "メールアドレスを更新しました"
+    new_email = params[:new_email].to_s.strip
+
+    if new_email.blank?
+      flash.now[:alert] = "新しいメールアドレスを入力してください"
+      return render :edit, status: :unprocessable_entity
+    end
+
+    if current_user.update(email: new_email)
+      if current_user.saved_change_to_email?
+        redirect_to authenticated_root_path, notice: "メールアドレスを更新しました"
+      else
+        flash.now[:alert] = "メールアドレスは変更されていません"
+        render :edit, status: :unprocessable_entity
+      end
     else
       flash.now[:alert] = current_user.errors.full_messages.to_sentence
       render :edit, status: :unprocessable_entity
@@ -21,10 +33,6 @@ class AccountController < ApplicationController
   end
 
   private
-
-  def email_params
-    params.permit(:email)
-  end
 
   def password_params
     params.permit(:password, :password_confirmation)

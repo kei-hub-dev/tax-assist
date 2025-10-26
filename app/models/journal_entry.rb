@@ -17,4 +17,10 @@ class JournalEntry < ApplicationRecord
     last_no = self.class.where(accounting_period_id: accounting_period_id).maximum(:entry_no)
     self.entry_no = (last_no || 0) + 1
   end
+
+  def journal_entry_params
+    params.require(:journal_entry)
+          .permit(:entry_date, :description,
+                  journal_entry_lines_attributes: %i[id account_id dc amount memo _destroy])
+  end
 end

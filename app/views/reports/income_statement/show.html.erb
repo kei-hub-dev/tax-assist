@@ -3,7 +3,9 @@
 <div class="page">
   <div class="narrow">
     <h1 class="page-title">損益計算書</h1>
-    <div class="year-banner">選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span></div>
+    <div class="year-banner">
+      選択中の会計年度:<span class="year-pill"><%= current_period.accounting_year %></span>
+    </div>
 
     <div class="table-wrap mt-16">
       <table class="table">
@@ -70,6 +72,54 @@
             <td>当期純利益</td>
             <td class="text-right"><%= number_with_delimiter(@net_income) %></td>
           </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="mt-12">内訳（収益）</h3>
+    <div class="table-wrap mt-2">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>サブカテゴリ</th>
+            <th class="text-right">金額</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @revenue_breakdown.present? %>
+            <% @revenue_breakdown.each do |row| %>
+              <tr>
+                <td><%= row[:label] %></td>
+                <td class="text-right"><%= number_with_delimiter(row[:amount]) %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr><td colspan="2" class="text-center text-muted">対象データがありません</td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="mt-12">内訳（費用）</h3>
+    <div class="table-wrap mt-2">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>サブカテゴリ</th>
+            <th class="text-right">金額</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @expense_breakdown.present? %>
+            <% @expense_breakdown.each do |row| %>
+              <tr>
+                <td><%= row[:label] %></td>
+                <td class="text-right"><%= number_with_delimiter(row[:amount]) %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr><td colspan="2" class="text-center text-muted">対象データがありません</td></tr>
+          <% end %>
         </tbody>
       </table>
     </div>

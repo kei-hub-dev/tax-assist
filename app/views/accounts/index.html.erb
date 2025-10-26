@@ -14,9 +14,9 @@
     <table class="table">
       <thead>
         <tr>
-          <th>科目名</th>
           <th>区分</th>
           <th>サブ区分</th>
+          <th>科目名</th>
           <th class="actions-col text-right">操作</th>
         </tr>
       </thead>
@@ -24,9 +24,9 @@
         <% if @accounts.any? %>
           <% @accounts.each do |account| %>
             <tr>
-              <td><%= account.name %></td>
               <td><%= I18n.t("accounts.categories.#{account.category}", default: account.category) %></td>
               <td><%= subs.dig(account.category.to_s, account.sub_category.to_s) || "-" %></td>
+              <td><%= account.name %></td>
               <td class="actions-cell nowrap">
                 <%= link_to "編集", edit_account_path(account), class: "btn btn-sm btn-inline" %>
                 <%= button_to "削除", account_path(account),

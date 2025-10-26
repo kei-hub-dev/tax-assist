@@ -2,13 +2,12 @@
 
 <%= form_with model: @account, local: true, html: { class: "form" } do |f| %>
   <div class="field">
-    <%= f.label :name, "科目名" %>
-    <%= f.text_field :name %>
-  </div>
-
-  <div class="field">
     <%= f.label :category, "区分" %>
-    <%= f.select :category, I18n.t("accounts.categories").map { |k, v| [v, k] }, include_blank: "選択してください" %>
+    <% categories = [["資産","asset"],["負債","liability"],["純資産","equity"],["収益","revenue"],["費用","expense"]] %>
+    <%= f.select :category,
+          options_for_select(categories, @account.category),
+          include_blank: "選択してください",
+          id: "account_category" %>
   </div>
 
   <div class="field">
@@ -52,6 +51,11 @@
       });
     })();
   </script>
+
+  <div class="field">
+    <%= f.label :name, "科目名" %>
+    <%= f.text_field :name %>
+  </div>
 
   <div class="actions vstack">
     <%= f.submit "保存", class: "btn btn-sm btn-block" %>

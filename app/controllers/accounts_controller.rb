@@ -1,24 +1,25 @@
+# app/controllers/accounts_controller.rb
 class AccountsController < ApplicationController
   before_action :set_account, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @accounts = current_user.accounts.order(:category, :name)
+    @accounts = current_user.accounts.order(:category, :sub_category, :name)
   end
 
   def sub_categories
-    @accounts = current_user.accounts.where(category: %w[revenue expense]).order(:category, :name)
+    @accounts = current_user.accounts
+                            .where(category: %w[revenue expense])
+                            .order(:category, :sub_category, :name)
   end
 
   def update_sub_categories
     rows = params.require(:accounts)
-
     ids = rows.keys.grep(/\A\d+\z/).map(&:to_i)
     accounts = current_user.accounts.where(id: ids).index_by(&:id)
 
     rows.each do |id_str, attrs|
       account_to_update = accounts[id_str.to_i]
       next unless account_to_update
-
       permitted = ActionController::Parameters.new(attrs).permit(:sub_category)
       value = permitted[:sub_category].presence
       account_to_update.update(sub_category: value)
