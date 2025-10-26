@@ -73,9 +73,16 @@ class Reports::GeneralLedgerController < ApplicationController
       end
       format.pdf do
         html = render_to_string(action: :show, layout: "pdf", formats: [ :html ])
-        pdf  = Grover.new(html).to_pdf
-        send_data pdf, filename: "general_ledger_#{current_period.accounting_year}.pdf",
-                  type: "application/pdf", disposition: "attachment"
+        pdf  = Grover.new(
+          html,
+          display_url: request.original_url,
+          format: "A4",
+          launch_args: %w[--no-sandbox --disable-dev-shm-usage --disable-gpu]
+        ).to_pdf
+        send_data pdf,
+          filename: "balance_sheet_#{current_period.accounting_year}.pdf",
+          type: "application/pdf",
+          disposition: "attachment"
       end
     end
   end
