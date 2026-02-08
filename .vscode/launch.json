@@ -1,0 +1,48 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        // ① Railsサーバーを起動してデバッグ
+        {
+            "type": "rdbg",
+            "name": "Rails server (rdbg)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/bin/rails",
+            "args": [
+                "server"
+            ],
+            "useBundler": true,
+            "env": {
+                "RAILS_ENV": "development"
+            }
+        },
+        // ② RSpec をデバッグ実行（任意の specにブレーク可）
+        {
+            "type": "rdbg",
+            "name": "RSpec (rdbg)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/bin/rspec",
+            "useBundler": true
+            // "args": ["spec/models/user_spec.rb"]  // ←個別に走らせたい時に指定
+        },
+        // ③ カレントファイルを直接デバッグ（スクリプト/小タスク向け）
+        {
+            "type": "rdbg",
+            "name": "Debug current file (rdbg)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${file}",
+            "useBundler": true,
+            "askParameters": false
+        },
+        // ④ 既に起動中のプロセスにアタッチ
+        {
+            "type": "rdbg",
+            "name": "Attach to Rails (rdbg)",
+            "request": "attach",
+            "debugPort": "12345"
+        }
+    ]
+}
