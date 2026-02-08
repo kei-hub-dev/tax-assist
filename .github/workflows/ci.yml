@@ -51,4 +51,32 @@ jobs:
           bundler-cache: true
 
       - name: Lint code for consistent style
-        run: bin/rubocop -f github --except Layout/CommentIndentation
+        run: bin/rubocop -f github
+
+  rails_boot:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tax_assist_test
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Prepare DB and boot Rails
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tax_assist_test
+        run: |
+          bin/rails db:prepare
+          bin/rails zeitwerk:check
+          bin/rails runner "puts :ok"
