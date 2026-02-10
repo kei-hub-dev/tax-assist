@@ -12,6 +12,8 @@ gem "puma", ">= 5.0"
 gem "jbuilder"
 gem "importmap-rails"
 gem "devise", "~> 4.9"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
 gem "rake", "~> 13.3"
 gem "grover"
 # Use Redis adapter to run Action Cable in production
