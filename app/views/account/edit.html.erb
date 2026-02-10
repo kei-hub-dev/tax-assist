@@ -4,40 +4,49 @@
   <div class="narrow">
     <h1 class="page-title">メール・パスワード変更</h1>
 
-    <h3 class="auth-title">メールアドレス変更</h3>
-    <%= render "shared/error_messages", object: current_user %>
-    <%= form_with url: email_user_account_path, method: :patch, local: true, html: { class: "form" } do %>
-      <div class="field">
-        <label>現在のメールアドレス: <%= current_user.email %></label>
+    <% if current_user.google_authenticated? %>
+      <div class="auth wide">
+        <p>Googleログインユーザーのため、メールアドレスとパスワードはこの画面から変更できません。</p>
+        <div class="actions vstack">
+          <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm btn-block" %>
+        </div>
       </div>
-      <div class="field">
-        <label for="new_email">新しいメールアドレス</label>
-        <%= email_field_tag :new_email %>
-      </div>
-      <div class="actions vstack">
-        <%= submit_tag "更新", class: "btn btn-sm btn-block" %>
-      </div>
-    <% end %>
+    <% else %>
+      <h3 class="auth-title">メールアドレス変更</h3>
+      <%= render "shared/error_messages", object: current_user %>
+      <%= form_with url: email_user_account_path, method: :patch, local: true, html: { class: "form" } do %>
+        <div class="field">
+          <label>現在のメールアドレス: <%= current_user.email %></label>
+        </div>
+        <div class="field">
+          <label for="new_email">新しいメールアドレス</label>
+          <%= email_field_tag :new_email %>
+        </div>
+        <div class="actions vstack">
+          <%= submit_tag "更新", class: "btn btn-sm btn-block" %>
+        </div>
+      <% end %>
 
-    <h3 class="auth-title mt-16">パスワード変更</h3>
-    <%= render "shared/error_messages", object: current_user %>
-    <%= form_with url: password_user_account_path, method: :patch, local: true, html: { class: "form" } do %>
-      <div class="field">
-        <label for="current_password">現在のパスワード</label>
-        <%= password_field_tag :current_password %>
-      </div>
-      <div class="field">
-        <label for="password">新しいパスワード</label>
-        <%= password_field_tag :password %>
-      </div>
-      <div class="field">
-        <label for="password_confirmation">新しいパスワード（確認）</label>
-        <%= password_field_tag :password_confirmation %>
-      </div>
-      <div class="actions vstack">
-        <%= submit_tag "更新", class: "btn btn-sm btn-block" %>
-        <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm btn-block" %>
-      </div>
+      <h3 class="auth-title mt-16">パスワード変更</h3>
+      <%= render "shared/error_messages", object: current_user %>
+      <%= form_with url: password_user_account_path, method: :patch, local: true, html: { class: "form" } do %>
+        <div class="field">
+          <label for="current_password">現在のパスワード</label>
+          <%= password_field_tag :current_password %>
+        </div>
+        <div class="field">
+          <label for="password">新しいパスワード</label>
+          <%= password_field_tag :password %>
+        </div>
+        <div class="field">
+          <label for="password_confirmation">新しいパスワード（確認）</label>
+          <%= password_field_tag :password_confirmation %>
+        </div>
+        <div class="actions vstack">
+          <%= submit_tag "更新", class: "btn btn-sm btn-block" %>
+          <%= link_to "戻る", authenticated_root_path, class: "btn btn-outline btn-sm btn-block" %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>

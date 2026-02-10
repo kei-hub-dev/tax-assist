@@ -1,4 +1,6 @@
 class AccountController < ApplicationController
+  before_action :reject_google_authenticated_user!, only: [ :email, :password ]
+
   def edit; end
 
   def email
@@ -36,5 +38,11 @@ class AccountController < ApplicationController
 
   def password_params
     params.permit(:password, :password_confirmation)
+  end
+
+  def reject_google_authenticated_user!
+    return unless current_user.google_authenticated?
+
+    redirect_to edit_user_account_path, alert: "Googleログインユーザーはメール/パスワードを変更できません"
   end
 end

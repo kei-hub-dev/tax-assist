@@ -30,6 +30,18 @@
         </div>
       <% end %>
 
+      <div class="actions">
+        <% if ENV["GOOGLE_CLIENT_ID"].present? && ENV["GOOGLE_CLIENT_SECRET"].present? %>
+          <%= button_to "Googleログイン",
+                        user_google_oauth2_omniauth_authorize_path,
+                        method: :post,
+                        data: { turbo: false },
+                        class: "btn btn-outline" %>
+        <% else %>
+          <button type="button" class="btn btn-outline" disabled>Googleログイン（設定待ち）</button>
+        <% end %>
+      </div>
+
       <div class="links">
         <%= link_to "ユーザー登録", new_user_registration_path %> ・
         <%= link_to "パスワード再設定", new_user_password_path %>
