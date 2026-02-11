@@ -19,7 +19,7 @@
 
       <div class="field mt-3">
         <%= f.label :description, "概要" %>
-        <%= f.text_field :description, class: "input", placeholder: "例）備品購入／振込手数料 など" %>
+        <%= f.text_field :description, class: "input", placeholder: "例）備品購入／振込手数料 など", list: "journal-entry-description-list" %>
       </div>
 
       <%= render partial: "lines_fields", locals: { f: f } %>
@@ -29,5 +29,7 @@
         <%= link_to "戻る", journal_entries_path, class: "btn btn-outline btn-sm btn-block" %>
       </div>
     <% end %>
+
+    <%= render partial: "autocomplete_datalists", locals: { description_suggestions: @description_suggestions, memo_suggestions: @memo_suggestions } %>
   </div>
 </div>

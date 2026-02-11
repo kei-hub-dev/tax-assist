@@ -1,0 +1,11 @@
+<datalist id="journal-entry-description-list">
+  <% Array(description_suggestions).each do |description| %>
+    <option value="<%= description %>"></option>
+  <% end %>
+</datalist>
+
+<datalist id="journal-entry-memo-list">
+  <% Array(memo_suggestions).each do |memo| %>
+    <option value="<%= memo %>"></option>
+  <% end %>
+</datalist>

@@ -19,7 +19,7 @@
           <td><%= lf.collection_select :account_id, account_options, :id, :name, include_blank: "選択" %></td>
           <td><%= lf.select :dc, [["借方","debit"],["貸方","credit"]], include_blank: "選択" %></td>
           <td class="text-right"><%= lf.number_field :amount, min: 0, step: 1 %></td>
-          <td><%= lf.text_field :memo %></td>
+          <td><%= lf.text_field :memo, list: "journal-entry-memo-list" %></td>
           <td>
             <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('tr').querySelector('input[name*=\'[_destroy]\']').value=1; this.closest('tr').style.display='none';">
               行削除
@@ -48,7 +48,7 @@
       <td><%= lf.collection_select :account_id, account_options, :id, :name, include_blank: "選択" %></td>
       <td><%= lf.select :dc, [["借方","debit"],["貸方","credit"]], include_blank: "選択" %></td>
       <td class="text-right"><%= lf.number_field :amount, min: 0, step: 1, value: 0 %></td>
-      <td><%= lf.text_field :memo %></td>
+      <td><%= lf.text_field :memo, list: "journal-entry-memo-list" %></td>
       <td>
         <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('tr').querySelector('input[name*=\'[_destroy]\']').value=1; this.closest('tr').style.display='none';">
           行削除
