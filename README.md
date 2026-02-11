@@ -25,9 +25,6 @@
 
 ## Google認証設定
 - 環境変数 `GOOGLE_CLIENT_ID` と `GOOGLE_CLIENT_SECRET` を設定
-- Google Cloud Console の OAuth リダイレクト URI に以下を登録
-  - 開発: `http://localhost:3000/users/auth/google_oauth2/callback`
-  - 本番: `https://tax-assist.fly.dev/users/auth/google_oauth2/callback`
 
 ### ER図
 [画面例](images/ER.png)
