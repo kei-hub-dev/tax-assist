@@ -76,6 +76,22 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      # PDF 出力 (grover) は node + puppeteer を呼び出すため、
+      # 開発コンテナと同じ依存をランナー上にも用意する
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install puppeteer
+        run: npm ci --omit=dev
+
+      # 帳票 PDF の日本語が豆腐にならないことを検証するため、
+      # 開発コンテナと同じ CJK フォントをランナーにも入れる
+      - name: Install Japanese fonts
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends fonts-noto-cjk
+
       - name: Run tests
         env:
           RAILS_ENV: test
