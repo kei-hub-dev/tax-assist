@@ -9,7 +9,12 @@
 
       <%= render "shared/error_messages", object: @entry %>
 
-      <%= form_with model: @entry, url: journal_entries_path, method: :post, local: true, html: { class: "form" } do |f| %>
+      <%# AI が無効なときは関連する data 属性を一切出さない %>
+      <% ai_enabled = OllamaClient.enabled? %>
+      <% form_data = ai_enabled ? { controller: "journal-entry-suggestion",
+                                    journal_entry_suggestion_url_value: suggest_journal_entries_path } : {} %>
+      <%= form_with model: @entry, url: journal_entries_path, method: :post, local: true,
+                    html: { class: "form", data: form_data } do |f| %>
         <div class="field">
           <label for="journal_entry_entry_date">日付</label>
           <%= f.date_field :entry_date %>
@@ -18,9 +23,21 @@
         <!-- 追加：概要（description） -->
         <div class="field mt-3">
           <%= f.label :description, "概要" %>
-          <%= f.text_field :description, class: "input", placeholder: "例）備品購入／振込手数料 など", list: "journal-entry-description-list" %>
+          <%= f.text_field :description, class: "input", placeholder: "例）備品購入／振込手数料 など",
+                list: "journal-entry-description-list",
+                data: (ai_enabled ? { journal_entry_suggestion_target: "description" } : {}) %>
         </div>
         <!-- /追加 -->
+
+        <% if ai_enabled %>
+          <div class="field mt-3">
+            <button type="button" class="btn btn-outline btn-sm"
+                    data-journal-entry-suggestion-target="button"
+                    data-action="journal-entry-suggestion#suggest">AI提案</button>
+            <span class="text-muted" data-journal-entry-suggestion-target="status" aria-live="polite"></span>
+            <p class="text-danger" data-journal-entry-suggestion-target="warning" aria-live="polite" hidden></p>
+          </div>
+        <% end %>
 
         <%= render partial: "lines_fields", locals: { f: f } %>
 

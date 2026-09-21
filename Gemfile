@@ -65,6 +65,8 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  # Ollama への HTTP をスタブする
+  gem "webmock"
   gem "selenium-webdriver"
   gem "simplecov", require: false
 end

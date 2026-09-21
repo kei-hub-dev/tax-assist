@@ -18,6 +18,10 @@ services:
       POSTGRES_DB: tax_assist_development
       POSTGRES_TEST_DB: tax_assist_test
       BUNDLE_PATH: /usr/local/bundle
+    # ホストで動く Ollama にコンテナから到達するため。
+    # Linux では host-gateway の指定が必要 (Docker Desktop では既定で解決できる)。
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - db
     command: bash -lc "bin/rails db:prepare && bin/rails s -b 0.0.0.0"
