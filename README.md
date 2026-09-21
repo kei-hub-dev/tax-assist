@@ -34,6 +34,15 @@ docker compose up
    - AI実装(LLM構築後に実装予定)
    - オートコンプリート
 
+## コードレビュー
+PR の作成時に GitHub Actions 上で Gemini がコードレビューを行います。
+([run-gemini-cli](https://github.com/google-github-actions/run-gemini-cli) +
+[code-review 拡張](https://github.com/gemini-cli-extensions/code-review))
+
+- 必要な設定はシークレット `GEMINI_API_KEY` のみ（[AI Studio](https://aistudio.google.com/apikey) で発行）
+- 実行契機は PR の `opened` / `reopened` と手動実行のみ。push のたびには走りません
+- レビュー観点は `.gemini/styleguide.md` に記述
+
 ## Google認証設定
 - 環境変数 `GOOGLE_CLIENT_ID` と `GOOGLE_CLIENT_SECRET` を設定
 
