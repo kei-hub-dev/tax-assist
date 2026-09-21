@@ -34,6 +34,20 @@ docker compose up
    - AI実装(LLM構築後に実装予定)
    - オートコンプリート
 
+## コードレビュー
+PR を作成すると Gemini Code Assist for GitHub が
+自動でレビューと変更内容の要約を投稿します。
+個人利用は無料で、1 日あたり 100 件以上のPR レビューが可能です。
+
+### 設定ファイル
+| ファイル | 役割 |
+| --- | --- |
+| `.gemini/config.yaml` | レビューの有効/無効、コメントの重要度しきい値、除外ファイル |
+| `.gemini/styleguide.md` | このリポジトリ固有のレビュー観点（日本語でのレビュー、複式簿記の整合性、ユーザースコープの絞り込みなど） |
+
+### PR 上での操作
+PR のコメントに `/gemini` に続けて質問を書くと、その PR の文脈で回答します。
+
 ## Google認証設定
 - 環境変数 `GOOGLE_CLIENT_ID` と `GOOGLE_CLIENT_SECRET` を設定
 
