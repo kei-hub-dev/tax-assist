@@ -57,8 +57,8 @@ jobs:
           PULL_REQUEST_NUMBER: '${{ github.event.pull_request.number || inputs.pr_number }}'
         with:
           gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
-          # モデルを変えたい場合はこの行を書き換える
-          gemini_model: 'gemini-3.8-flash'
+          # モデルは Gemini CLI のルーティングに任せる(Flash 系が選ばれる)。
+          # 固定したい場合のみ gemini_model を指定する。
           # 投稿されない原因の切り分け用。解決したら両方とも外す
           gemini_debug: true
           upload_artifacts: true
@@ -88,11 +88,17 @@ jobs:
                 }
               },
               "tools": {
-                "core": []
+                "core": [
+                  "mcp_github_*",
+                  "activate_skill"
+                ]
               }
             }
           extensions: |
             [
               "https://github.com/gemini-cli-extensions/code-review"
             ]
-          prompt: '/pr-code-review'
+          # PR の URL を引数で直接渡す(拡張が公式にサポートする形式)。
+          # シェルツールは許可していないため、モデルが環境変数を自力で
+          # 読みに行かずに済むようにしておく。
+          prompt: '/pr-code-review https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number || inputs.pr_number }}'
