@@ -35,7 +35,7 @@ class JournalEntriesController < ApplicationController
   def destroy
     @entry = entry_scope.find(params[:id])
     @entry.destroy
-    redirect_to journal_entries_path, notice: "仕訳を削除しました"
+    redirect_to journal_entries_path, notice: "仕訳を削除しました", status: :see_other
   end
 
   private

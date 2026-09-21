@@ -1,6 +1,6 @@
 <% account_options = current_user.accounts.order(:category, :name) %>
 
-<div class="table-wrap mt-12">
+<div class="table-wrap mt-12" data-controller="journal-entry-lines">
   <table class="table">
     <thead>
       <tr>
@@ -11,7 +11,7 @@
         <th class="col-100"></th>
       </tr>
     </thead>
-    <tbody id="lines">
+    <tbody id="lines" data-journal-entry-lines-target="rows">
       <%= f.fields_for :journal_entry_lines do |lf| %>
         <tr class="line">
           <%= lf.hidden_field :id %>
@@ -21,7 +21,8 @@
           <td class="text-right"><%= lf.number_field :amount, min: 0, step: 1 %></td>
           <td><%= lf.text_field :memo, list: "journal-entry-memo-list" %></td>
           <td>
-            <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('tr').querySelector('input[name*=\'[_destroy]\']').value=1; this.closest('tr').style.display='none';">
+            <button type="button" class="btn btn-outline btn-sm"
+                    data-action="journal-entry-lines#remove">
               行削除
             </button>
           </td>
@@ -36,48 +37,32 @@
   </table>
 
   <div class="actions mt-8">
-    <button type="button" class="btn btn-sm" id="add-line-btn">行を追加</button>
+    <button type="button" class="btn btn-sm"
+            data-action="journal-entry-lines#add">行を追加</button>
   </div>
+
+  <%# 行追加時に複製されるひな形。child_index の NEW_RECORD を一意な値へ置換する %>
+  <template data-journal-entry-lines-target="template">
+    <%= f.fields_for :journal_entry_lines, JournalEntryLine.new, child_index: "NEW_RECORD" do |lf| %>
+      <tr class="line">
+        <%= lf.hidden_field :id %>
+        <%= lf.hidden_field :_destroy, value: 0 %>
+        <td><%= lf.collection_select :account_id, account_options, :id, :name, include_blank: "選択" %></td>
+        <td><%= lf.select :dc, [["借方","debit"],["貸方","credit"]], include_blank: "選択" %></td>
+        <td class="text-right"><%= lf.number_field :amount, min: 0, step: 1, value: 0 %></td>
+        <td><%= lf.text_field :memo, list: "journal-entry-memo-list" %></td>
+        <td>
+          <button type="button" class="btn btn-outline btn-sm"
+                  data-action="journal-entry-lines#remove">
+            行削除
+          </button>
+        </td>
+      </tr>
+      <tr class="line-errors">
+        <td colspan="5">
+          <%= render "shared/error_messages", object: lf.object %>
+        </td>
+      </tr>
+    <% end %>
+  </template>
 </div>
-
-<% prototype_html = capture do %>
-  <%= f.fields_for :journal_entry_lines, JournalEntryLine.new, child_index: "NEW_RECORD" do |lf| %>
-    <tr class="line">
-      <%= lf.hidden_field :id %>
-      <%= lf.hidden_field :_destroy, value: 0 %>
-      <td><%= lf.collection_select :account_id, account_options, :id, :name, include_blank: "選択" %></td>
-      <td><%= lf.select :dc, [["借方","debit"],["貸方","credit"]], include_blank: "選択" %></td>
-      <td class="text-right"><%= lf.number_field :amount, min: 0, step: 1, value: 0 %></td>
-      <td><%= lf.text_field :memo, list: "journal-entry-memo-list" %></td>
-      <td>
-        <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('tr').querySelector('input[name*=\'[_destroy]\']').value=1; this.closest('tr').style.display='none';">
-          行削除
-        </button>
-      </td>
-    </tr>
-    <tr class="line-errors">
-      <td colspan="5">
-        <%= render "shared/error_messages", object: lf.object %>
-      </td>
-    </tr>
-  <% end %>
-<% end %>
-
-<script>
-  (function() {
-    var addBtn = document.getElementById('add-line-btn');
-    if (!addBtn) return;
-    var tbody = document.getElementById('lines');
-    var template = `<%= j prototype_html %>`;
-    addBtn.addEventListener('click', function() {
-      var unique = Date.now().toString();
-      var html = template.replace(/NEW_RECORD/g, unique);
-      var temp = document.createElement('tbody');
-      temp.innerHTML = html.trim();
-      var row = temp.firstElementChild;
-      tbody.appendChild(row);
-      var err = row.nextElementSibling;
-      if (err && err.classList.contains('line-errors')) tbody.appendChild(err);
-    });
-  })();
-</script>

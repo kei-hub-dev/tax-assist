@@ -7,7 +7,10 @@
 
     <%= render "shared/error_messages", object: @opening_balance %>
 
-    <%= form_with url: opening_balances_path, method: :patch, local: true, html: { id: "opening-balances-form" } do %>
+    <%= form_with url: opening_balances_path, method: :patch, local: true,
+                  html: { id: "opening-balances-form",
+                          data: { controller: "opening-balance-totals",
+                                  action: "input->opening-balance-totals#recalculate" } } do %>
       <table class="table mb-12">
         <thead>
           <tr>
@@ -22,10 +25,12 @@
             <tr>
               <td><%= account.name %></td>
               <td class="text-right">
-                <%= number_field_tag "opening_balances[#{account.id}][debit_amount]",  bal&.debit_amount || 0, min: 0, step: 1 %>
+                <%= number_field_tag "opening_balances[#{account.id}][debit_amount]", bal&.debit_amount || 0,
+                      min: 0, step: 1, data: { opening_balance_totals_target: "debit" } %>
               </td>
               <td class="text-right">
-                <%= number_field_tag "opening_balances[#{account.id}][credit_amount]", bal&.credit_amount || 0, min: 0, step: 1 %>
+                <%= number_field_tag "opening_balances[#{account.id}][credit_amount]", bal&.credit_amount || 0,
+                      min: 0, step: 1, data: { opening_balance_totals_target: "credit" } %>
               </td>
             </tr>
           <% end %>
@@ -36,13 +41,14 @@
             </tr>
           <% end %>
 
-          <tr id="sum-row" class="sum-row">
+          <tr id="sum-row" class="sum-row" data-opening-balance-totals-target="sumRow">
             <td>合計</td>
-            <td id="total-debit"  class="text-right"><%= amt(@total_debit)  %></td>
-            <td id="total-credit" class="text-right"><%= amt(@total_credit) %></td>
+            <td id="total-debit"  class="text-right" data-opening-balance-totals-target="totalDebit"><%= amt(@total_debit)  %></td>
+            <td id="total-credit" class="text-right" data-opening-balance-totals-target="totalCredit"><%= amt(@total_credit) %></td>
           </tr>
           <tr>
-            <td colspan="3" id="sum-note" class="text-center text-danger hidden" aria-live="polite">
+            <td colspan="3" id="sum-note" class="text-center text-danger hidden" aria-live="polite"
+                data-opening-balance-totals-target="note">
               借方と貸方の合計が一致していません
             </td>
           </tr>
@@ -56,39 +62,3 @@
     <% end %>
   </div>
 </div>
-
-<script>
-  (function() {
-    var form = document.getElementById('opening-balances-form');
-    if (!form) return;
-
-    var debitInputs  = form.querySelectorAll('input[name^="opening_balances"][name$="[debit_amount]"]');
-    var creditInputs = form.querySelectorAll('input[name^="opening_balances"][name$="[credit_amount]"]');
-    var totalDebitEl  = document.getElementById('total-debit');
-    var totalCreditEl = document.getElementById('total-credit');
-    var sumRow  = document.getElementById('sum-row');
-    var noteEl  = document.getElementById('sum-note');
-
-    function toInt(v){ var n = parseInt(v,10); return isNaN(n) ? 0 : n; }
-
-    function recalc() {
-      var td = 0, tc = 0;
-      debitInputs.forEach(function(i){ td += toInt(i.value); });
-      creditInputs.forEach(function(i){ tc += toInt(i.value); });
-
-      if (totalDebitEl)  totalDebitEl.textContent  = td.toLocaleString();
-      if (totalCreditEl) totalCreditEl.textContent = tc.toLocaleString();
-
-      var match = (td === tc);
-      if (sumRow) {
-        sumRow.classList.toggle('sum-ok', match);
-        sumRow.classList.toggle('sum-ng', !match);
-      }
-      if (noteEl) noteEl.classList.toggle('hidden', match);
-    }
-
-    debitInputs.forEach(function(i){ i.addEventListener('input', recalc); });
-    creditInputs.forEach(function(i){ i.addEventListener('input', recalc); });
-    recalc();
-  })();
-</script>

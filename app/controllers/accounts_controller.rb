@@ -57,7 +57,7 @@ class AccountsController < ApplicationController
 
   def destroy
     @account.destroy
-    redirect_to accounts_path, notice: "勘定科目を削除しました"
+    redirect_to accounts_path, notice: "勘定科目を削除しました", status: :see_other
   end
 
   private

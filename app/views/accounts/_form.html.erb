@@ -1,56 +1,27 @@
 <%= render "shared/error_messages", object: @account %>
 
-<%= form_with model: @account, local: true, html: { class: "form" } do |f| %>
+<%= form_with model: @account, local: true,
+              html: { class: "form",
+                      data: { controller: "account-sub-category",
+                              account_sub_category_options_value: I18n.t("accounts.sub_categories").to_json,
+                              account_sub_category_selected_value: @account.sub_category.to_s } } do |f| %>
   <div class="field">
     <%= f.label :category, "区分" %>
     <% categories = [["資産","asset"],["負債","liability"],["純資産","equity"],["収益","revenue"],["費用","expense"]] %>
     <%= f.select :category,
           options_for_select(categories, @account.category),
-          include_blank: "選択してください",
-          id: "account_category" %>
+          { include_blank: "選択してください" },
+          id: "account_category",
+          data: { account_sub_category_target: "category",
+                  action: "account-sub-category#categoryChanged" } %>
   </div>
 
-  <div class="field">
+  <div class="field" data-account-sub-category-target="subCategoryField">
     <%= f.label :sub_category, "サブ区分" %>
-    <% subs = I18n.t("accounts.sub_categories") %>
-    <%= f.select :sub_category, [], include_blank: "指定なし", id: "account_sub_category", data: { subs: subs.to_json } %>
+    <%= f.select :sub_category, [], { include_blank: "指定なし" },
+          id: "account_sub_category",
+          data: { account_sub_category_target: "subCategory" } %>
   </div>
-
-  <script>
-    (function() {
-      var cat = document.getElementById('account_category') || document.querySelector('[name="account[category]"]');
-      var sub = document.getElementById('account_sub_category');
-      var subs = JSON.parse(sub.dataset.subs || '{}');
-
-      function rebuild() {
-        var v = cat ? cat.value : '';
-        var map = subs[v] || {};
-        while (sub.firstChild) sub.removeChild(sub.firstChild);
-        var blank = document.createElement('option');
-        blank.value = '';
-        blank.textContent = '指定なし';
-        sub.appendChild(blank);
-        Object.keys(map).forEach(function(k) {
-          var o = document.createElement('option');
-          o.value = k;
-          o.textContent = map[k];
-          sub.appendChild(o);
-        });
-        var wrap = sub.closest('.field');
-        if (wrap) wrap.style.display = (v === 'revenue' || v === 'expense') ? '' : 'none';
-        if (!(v === 'revenue' || v === 'expense')) sub.value = '';
-      }
-
-      sub.setAttribute('data-current', '<%= j(@account.sub_category.to_s) %>');
-      rebuild();
-      if (sub.dataset.current) sub.value = sub.dataset.current;
-
-      if (cat) cat.addEventListener('change', function() {
-        sub.removeAttribute('data-current');
-        rebuild();
-      });
-    })();
-  </script>
 
   <div class="field">
     <%= f.label :name, "科目名" %>
