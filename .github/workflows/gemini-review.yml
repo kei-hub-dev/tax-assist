@@ -57,8 +57,11 @@ jobs:
           PULL_REQUEST_NUMBER: '${{ github.event.pull_request.number || inputs.pr_number }}'
         with:
           gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
-          # Flash 系は無料枠の対象。リポジトリ変数 GEMINI_MODEL で上書きできる
-          gemini_model: '${{ vars.GEMINI_MODEL || ''gemini-3.8-flash'' }}'
+          # モデルを変えたい場合はこの行を書き換える
+          gemini_model: 'gemini-3.8-flash'
+          # 投稿されない原因の切り分け用。解決したら両方とも外す
+          gemini_debug: true
+          upload_artifacts: true
           github_pr_number: '${{ github.event.pull_request.number || inputs.pr_number }}'
           workflow_name: 'gemini-review'
           settings: |-
