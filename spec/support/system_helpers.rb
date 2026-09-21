@@ -33,9 +33,6 @@ RSpec.configure do |config|
   config.include SystemHelpers, type: :system
 
   config.before(:each, type: :system) do
-    # Rails 8 はテスト環境でルーティングを遅延ロードするが devise 4.9 は未対応で、
-    # Devise.mappings が空のまま参照されて落ちることがある (devise 5.0 の #5728 で修正済み)。
-    Rails.application.reload_routes_unless_loaded
     driven_by :headless_chromium
   end
 end
