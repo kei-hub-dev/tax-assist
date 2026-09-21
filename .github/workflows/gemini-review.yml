@@ -21,9 +21,6 @@ concurrency:
 
 jobs:
   review:
-    # レビューはあくまで補助なので、クォータ超過や API 障害で失敗しても
-    # PR 全体を落とさない(CI 本体の合否とは切り離す)
-    continue-on-error: true
     # ドラフト PR はレビューしない(作業途中への指摘と無料枠の消費を避ける)
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
@@ -52,6 +49,9 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Gemini によるレビュー
+        id: gemini
+        # ここでは失敗させず、次のステップで失敗理由を判定して出し分ける
+        continue-on-error: true
         uses: google-github-actions/run-gemini-cli@v0
         env:
           GEMINI_CLI_TRUST_WORKSPACE: 'true'
@@ -103,3 +103,53 @@ jobs:
           # シェルツールは許可していないため、モデルが環境変数を自力で
           # 読みに行かずに済むようにしておく。
           prompt: '/pr-code-review https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number || inputs.pr_number }}'
+
+      - name: レビュー結果の判定
+        if: always()
+        env:
+          OUTCOME: '${{ steps.gemini.outcome }}'
+          GEMINI_ERROR: '${{ steps.gemini.outputs.error }}'
+        run: |
+          set -uo pipefail
+
+          if [ "${OUTCOME}" = "success" ]; then
+            echo "レビューを投稿しました。" >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          # 429 / クォータ超過は「使い切った」だけなので PR を落とさない。
+          # ただし理由が分かるようメッセージを明示する。
+          if printf '%s' "${GEMINI_ERROR}" | grep -qiE '429|quota|RESOURCE_EXHAUSTED|exhausted'; then
+            echo "::warning title=Gemini のクォータ超過::Gemini API の 1 日あたりのリクエスト上限を使い切ったため、レビューをスキップしました。コードの問題ではありません。"
+            {
+              echo "## Gemini レビューをスキップしました"
+              echo
+              echo "**理由: Gemini API のクォータ超過 (429)**"
+              echo
+              echo "1 日あたりのリクエスト上限を使い切っています。翌日のリセット後に再実行するか、"
+              echo "Actions タブから workflow_dispatch で PR 番号を指定して実行してください。"
+              echo
+              echo "コードに問題があるわけではありません。"
+              echo
+              echo '<details><summary>API からのエラー</summary>'
+              echo
+              echo '```'
+              printf '%s\n' "${GEMINI_ERROR}"
+              echo '```'
+              echo
+              echo '</details>'
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          echo "::error title=Gemini レビューの失敗::クォータ超過以外の理由でレビューに失敗しました。ログを確認してください。"
+          {
+            echo "## Gemini レビューが失敗しました"
+            echo
+            echo "クォータ超過 (429) ではない失敗です。設定または API の問題の可能性があります。"
+            echo
+            echo '```'
+            printf '%s\n' "${GEMINI_ERROR}"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+          exit 1
