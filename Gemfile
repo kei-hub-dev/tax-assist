@@ -18,6 +18,9 @@ gem "rake", "~> 13.3"
 # Ruby 3.4 で csv は default gem ではなくなったため明示的に宣言する
 # (app/controllers/reports/*_controller.rb の CSV エクスポートで使用)
 gem "csv"
+# json 3.0 は JSON.parse の第2位置引数を廃止しており、セッション復元の経路で
+# ArgumentError (given 2, expected 1) になるため 2 系に固定する
+gem "json", "~> 2.13"
 gem "grover"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
