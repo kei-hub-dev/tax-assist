@@ -11,6 +11,8 @@ gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 gem "importmap-rails"
+gem "turbo-rails"
+gem "stimulus-rails"
 gem "devise", "~> 4.9"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
