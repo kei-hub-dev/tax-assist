@@ -52,7 +52,8 @@ Temporary Items
 ### Rails ###
 *.rbc
 capybara-*.html
-.rspec
+# .rspec はプロジェクト共通の設定なのでコミットする(個人設定は .rspec-local)
+.rspec-local
 /db/*.sqlite3
 /db/*.sqlite3-journal
 /db/*.sqlite3-[0-9]*
