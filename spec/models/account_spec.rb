@@ -54,6 +54,21 @@ RSpec.describe Account, type: :model do
     end
   end
 
+  describe "判定基準 (guidance)" do
+    it "未設定でも有効" do
+      expect(described_class.new(user: user, name: "現金", category: "asset")).to be_valid
+    end
+
+    it "保存できる" do
+      account = described_class.create!(
+        user: user, name: "旅費交通費", category: "expense", sub_category: "sganda",
+        guidance: "電車・バス・タクシーなど移動に伴う費用。接待交際費にはしない。"
+      )
+
+      expect(account.reload.guidance).to eq("電車・バス・タクシーなど移動に伴う費用。接待交際費にはしない。")
+    end
+  end
+
   describe "科目名の一意性" do
     it "同じユーザー内では重複できない" do
       described_class.create!(user: user, name: "現金", category: "asset")

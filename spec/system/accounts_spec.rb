@@ -37,6 +37,23 @@ RSpec.describe "勘定科目の編集画面", type: :system do
     expect(page.evaluate_script("document.getElementById('account_sub_category').value")).to eq("sales")
   end
 
+  describe "判定基準の編集" do
+    it "一覧に判定基準が表示され、編集して保存できる" do
+      sales.update!(guidance: "本業による収入。商品の販売代金やサービスの提供料。")
+
+      visit accounts_path
+      expect(page).to have_content("判定基準")
+      expect(page).to have_content("本業による収入")
+
+      visit edit_account_path(sales)
+      fill_in "account[guidance]", with: "当事務所では受託開発の売上のみをここに計上する"
+      click_button "保存"
+
+      expect(page).to have_content("当事務所では受託開発の売上のみをここに計上する")
+      expect(sales.reload.guidance).to eq("当事務所では受託開発の売上のみをここに計上する")
+    end
+  end
+
   private
 
   def sub_category_values

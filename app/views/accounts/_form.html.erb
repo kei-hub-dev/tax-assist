@@ -28,6 +28,13 @@
     <%= f.text_field :name %>
   </div>
 
+  <div class="field">
+    <%= f.label :guidance, "判定基準" %>
+    <%= f.text_area :guidance, rows: 3,
+          placeholder: "例) 電車・バス・タクシーなど移動に伴う費用。接待交際費にはしない。" %>
+    <p class="text-muted">どういう支出をこの科目に入れるかの目安です。仕訳入力時の参考になります。</p>
+  </div>
+
   <div class="actions vstack">
     <%= f.submit "保存", class: "btn btn-sm btn-block" %>
     <%= link_to "戻る", accounts_path, class: "btn btn-outline btn-sm btn-block" %>

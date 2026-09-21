@@ -67,6 +67,6 @@ class AccountsController < ApplicationController
   end
 
   def account_params
-    params.require(:account).permit(:name, :category, :sub_category)
+    params.require(:account).permit(:name, :category, :sub_category, :guidance)
   end
 end
