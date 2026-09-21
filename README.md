@@ -35,18 +35,31 @@ docker compose up
    - オートコンプリート
 
 ## コードレビュー
-PR を作成すると Gemini Code Assist for GitHub が
-自動でレビューと変更内容の要約を投稿します。
-個人利用は無料で、1 日あたり 100 件以上のPR レビューが可能です。
+PR を作成すると GitHub Actions 上で Gemini がコードレビューを行い、指摘を PR に投稿します。
+[google-github-actions/run-gemini-cli](https://github.com/google-github-actions/run-gemini-cli) と
+[code-review 拡張](https://github.com/gemini-cli-extensions/code-review) を使用しています。
 
-### 設定ファイル
+### 必要な設定
+リポジトリのシークレットに `GEMINI_API_KEY` を登録してください。
+キーは [Google AI Studio](https://aistudio.google.com/apikey) で発行できます。
+
+### 構成
 | ファイル | 役割 |
 | --- | --- |
-| `.gemini/config.yaml` | レビューの有効/無効、コメントの重要度しきい値、除外ファイル |
-| `.gemini/styleguide.md` | このリポジトリ固有のレビュー観点（日本語でのレビュー、複式簿記の整合性、ユーザースコープの絞り込みなど） |
+| `.github/workflows/gemini-review.yml` | ワークフロー本体 |
+| `.gemini/styleguide.md` | このリポジトリ固有のレビュー観点。ワークフローが読み込み `ADDITIONAL_CONTEXT` として渡す |
 
-### PR 上での操作
-PR のコメントに `/gemini` に続けて質問を書くと、その PR の文脈で回答します。
+### 実行される契機
+- PR を作成したとき（`opened`）
+- PR を再オープンしたとき（`reopened`）
+- Actions タブから手動実行したとき（`workflow_dispatch`。PR 番号を指定）
+
+push のたびには実行されません。
+途中でもう一度レビューさせたい場合は、PR を Close → Reopen するか手動実行してください。
+
+### モデル
+既定は `gemini-3.8-flash` です（Flash 系は無料枠の対象）。
+リポジトリ変数 `GEMINI_MODEL` を設定すると上書きできます。
 
 ## Google認証設定
 - 環境変数 `GOOGLE_CLIENT_ID` と `GOOGLE_CLIENT_SECRET` を設定

@@ -1,0 +1,95 @@
+name: Gemini PR Review
+
+# 無料枠(Gemini API の Free tier)で運用するため、レビューの実行契機を絞っている。
+# push のたびには走らせず、PR を開いた時と再オープンした時のみ。
+# 途中でもう一度レビューさせたい場合は PR を Close -> Reopen するか、
+# Actions タブから workflow_dispatch で PR 番号を指定して実行する。
+on:
+  pull_request:
+    types: [ opened, reopened ]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'レビュー対象の PR 番号'
+        required: true
+        type: string
+
+concurrency:
+  group: 'gemini-review-${{ github.event.pull_request.number || inputs.pr_number }}'
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # ドラフト PR はレビューしない(作業途中への指摘と無料枠の消費を避ける)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: レビュー観点を読み込む
+        # .gemini/styleguide.md をそのまま ADDITIONAL_CONTEXT として渡す。
+        # code-review 拡張は core ツール(ファイル読み取り)を無効にして動くため、
+        # ファイルを読ませるのではなくワークフロー側で内容を注入する。
+        run: |
+          {
+            echo 'ADDITIONAL_CONTEXT<<GEMINI_STYLEGUIDE_EOF'
+            cat .gemini/styleguide.md
+            echo 'GEMINI_STYLEGUIDE_EOF'
+          } >> "$GITHUB_ENV"
+
+      - name: Gemini によるレビュー
+        uses: google-github-actions/run-gemini-cli@v0
+        env:
+          GEMINI_CLI_TRUST_WORKSPACE: 'true'
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GEMINI_API_KEY: '${{ secrets.GEMINI_API_KEY }}'
+          REPOSITORY: '${{ github.repository }}'
+          PULL_REQUEST_NUMBER: '${{ github.event.pull_request.number || inputs.pr_number }}'
+        with:
+          gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
+          # Flash 系は無料枠の対象。リポジトリ変数 GEMINI_MODEL で上書きできる
+          gemini_model: '${{ vars.GEMINI_MODEL || ''gemini-3.8-flash'' }}'
+          github_pr_number: '${{ github.event.pull_request.number || inputs.pr_number }}'
+          workflow_name: 'gemini-review'
+          settings: |-
+            {
+              "model": {
+                "maxSessionTurns": 25
+              },
+              "mcpServers": {
+                "github": {
+                  "command": "docker",
+                  "args": [
+                    "run", "-i", "--rm",
+                    "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
+                    "ghcr.io/github/github-mcp-server:v0.27.0"
+                  ],
+                  "includeTools": [
+                    "add_comment_to_pending_review",
+                    "pull_request_read",
+                    "pull_request_review_write"
+                  ],
+                  "env": {
+                    "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+                  }
+                }
+              },
+              "tools": {
+                "core": []
+              }
+            }
+          extensions: |
+            [
+              "https://github.com/gemini-cli-extensions/code-review"
+            ]
+          prompt: '/pr-code-review'
