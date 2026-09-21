@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nodejs \
     npm \
     chromium \
+    chromium-driver \
     fonts-noto-cjk \
   && rm -rf /var/lib/apt/lists/*
 
