@@ -33,7 +33,7 @@ RSpec.describe JournalEntrySuggester, type: :model do
     it "勘定科目を ActiveRecord のオブジェクトとして返す" do
       stub_response
 
-      result = suggester.call(description: "小田急線 顧客訪問", amount: 280)
+      result = suggester.call(description: "阪急電鉄 顧客訪問", amount: 280)
 
       expect(result.debit_account).to eq(travel)
       expect(result.credit_account).to eq(cash)
@@ -45,7 +45,7 @@ RSpec.describe JournalEntrySuggester, type: :model do
       stub_response("differs_from_standard" => true,
                     "warning" => "過去に接待交際費が使われていますが、判定基準では旅費交通費が適切です")
 
-      result = suggester.call(description: "小田急線 顧客訪問")
+      result = suggester.call(description: "阪急電鉄 顧客訪問")
 
       expect(result).to be_differs_from_standard
       expect(result.warning).to include("旅費交通費")
@@ -65,13 +65,13 @@ RSpec.describe JournalEntrySuggester, type: :model do
     it "候補に無い勘定科目を返されたら例外" do
       stub_response("debit_account" => "架空の科目")
 
-      expect { suggester.call(description: "小田急線 顧客訪問") }
+      expect { suggester.call(description: "阪急電鉄 顧客訪問") }
         .to raise_error(OllamaClient::Error, /候補に無い勘定科目/)
     end
   end
 
   describe "プロンプトの組み立て" do
-    def captured_prompt(description: "小田急線 顧客訪問", amount: 280)
+    def captured_prompt(description: "阪急電鉄 顧客訪問", amount: 280)
       stub_response
       prompt = nil
       allow(client).to receive(:chat) { |args| prompt = args[:user]; stub_body }
@@ -94,13 +94,13 @@ RSpec.describe JournalEntrySuggester, type: :model do
 
     it "過去の仕訳を含む" do
       entry = JournalEntry.create!(accounting_period: period, entry_date: Date.current,
-                                   description: "JR東日本 新宿→品川")
+                                   description: "JR西日本 大阪→三ノ宮")
       JournalEntryLine.create!(journal_entry: entry, account: entertainment, dc: "debit", amount: 320)
       JournalEntryLine.create!(journal_entry: entry, account: cash, dc: "credit", amount: 320)
 
       prompt = captured_prompt
 
-      expect(prompt).to include("摘要「JR東日本 新宿→品川」 借方:接待交際費 貸方:現金")
+      expect(prompt).to include("摘要「JR西日本 大阪→三ノ宮」 借方:接待交際費 貸方:現金")
     end
 
     it "履歴が無いときはその旨を示す" do

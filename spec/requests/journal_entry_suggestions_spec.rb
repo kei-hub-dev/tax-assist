@@ -33,7 +33,7 @@ RSpec.describe "仕訳の AI 提案", type: :request do
     it "エンドポイントは 404 を返す" do
       allow(OllamaClient).to receive(:enabled?).and_return(false)
 
-      post suggest_journal_entries_path, params: { description: "小田急線 顧客訪問" }
+      post suggest_journal_entries_path, params: { description: "阪急電鉄 顧客訪問" }
 
       expect(response).to have_http_status(:not_found)
     end
@@ -65,7 +65,7 @@ RSpec.describe "仕訳の AI 提案", type: :request do
         "warning" => "", "confidence" => 0.95
       )
 
-      post suggest_journal_entries_path, params: { description: "小田急線 顧客訪問", amount: 280 }
+      post suggest_journal_entries_path, params: { description: "阪急電鉄 顧客訪問", amount: 280 }
 
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body)
@@ -82,7 +82,7 @@ RSpec.describe "仕訳の AI 提案", type: :request do
         "warning" => "過去に接待交際費が使われています", "confidence" => 0.9
       )
 
-      post suggest_journal_entries_path, params: { description: "小田急線 顧客訪問" }
+      post suggest_journal_entries_path, params: { description: "阪急電鉄 顧客訪問" }
 
       body = JSON.parse(response.body)
       expect(body["differs_from_standard"]).to be(true)
@@ -100,7 +100,7 @@ RSpec.describe "仕訳の AI 提案", type: :request do
     it "Ollama に繋がらなければ 503" do
       stub_request(:post, "#{ollama_url}/api/chat").to_raise(Errno::ECONNREFUSED)
 
-      post suggest_journal_entries_path, params: { description: "小田急線 顧客訪問" }
+      post suggest_journal_entries_path, params: { description: "阪急電鉄 顧客訪問" }
 
       expect(response).to have_http_status(:service_unavailable)
     end
@@ -112,7 +112,7 @@ RSpec.describe "仕訳の AI 提案", type: :request do
         "warning" => "", "confidence" => 0.5
       )
 
-      post suggest_journal_entries_path, params: { description: "小田急線 顧客訪問" }
+      post suggest_journal_entries_path, params: { description: "阪急電鉄 顧客訪問" }
 
       expect(response).to have_http_status(:bad_gateway)
     end
@@ -124,7 +124,7 @@ RSpec.describe "仕訳の AI 提案", type: :request do
     it "未ログインなら提案できない" do
       sign_out user
 
-      post suggest_journal_entries_path, params: { description: "小田急線 顧客訪問" }
+      post suggest_journal_entries_path, params: { description: "阪急電鉄 顧客訪問" }
 
       expect(response).not_to have_http_status(:ok)
     end

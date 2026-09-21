@@ -16,7 +16,7 @@ RSpec.describe "帳票の出力", type: :request do
     JournalEntryLine.create!(journal_entry: entry, account: sales, dc: "credit", amount: 100_000)
 
     expense = JournalEntry.create!(accounting_period: period, entry_date: Date.new(period.accounting_year, 4, 2),
-                                   description: "JR東日本 新宿→品川")
+                                   description: "JR西日本 大阪→三ノ宮")
     JournalEntryLine.create!(journal_entry: expense, account: travel, dc: "debit",  amount: 320)
     JournalEntryLine.create!(journal_entry: expense, account: cash,   dc: "credit", amount: 320)
 

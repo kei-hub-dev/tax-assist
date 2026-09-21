@@ -56,7 +56,7 @@ RSpec.describe "仕訳の AI 提案 (画面)", type: :system do
       )
 
       visit journal_entries_path
-      fill_in "journal_entry[description]", with: "小田急線 顧客訪問"
+      fill_in "journal_entry[description]", with: "阪急電鉄 顧客訪問"
       click_button "AI提案"
 
       expect(page).to have_content("借方: 旅費交通費")
@@ -80,7 +80,7 @@ RSpec.describe "仕訳の AI 提案 (画面)", type: :system do
       )
 
       visit journal_entries_path
-      fill_in "journal_entry[description]", with: "小田急線 顧客訪問"
+      fill_in "journal_entry[description]", with: "阪急電鉄 顧客訪問"
       click_button "AI提案"
 
       expect(page).to have_content("過去に接待交際費が使われていますが")
@@ -90,7 +90,7 @@ RSpec.describe "仕訳の AI 提案 (画面)", type: :system do
       stub_request(:post, "#{ollama_url}/api/chat").to_raise(Errno::ECONNREFUSED)
 
       visit journal_entries_path
-      fill_in "journal_entry[description]", with: "小田急線 顧客訪問"
+      fill_in "journal_entry[description]", with: "阪急電鉄 顧客訪問"
       click_button "AI提案"
 
       expect(page).to have_content("接続できません")
