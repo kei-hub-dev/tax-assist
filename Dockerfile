@@ -1,4 +1,4 @@
-FROM ruby:3.3-slim
+FROM ruby:3.4.10-slim-trixie
 
 ENV LANG=C.UTF-8 \
     BUNDLE_PATH=/usr/local/bundle \
@@ -23,19 +23,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-noto-cjk \
   && rm -rf /var/lib/apt/lists/*
 
-RUN gem update --system && gem install bundler -v 2.3.27
+RUN gem update --system && gem install bundler -v 2.7.2
 
 WORKDIR /workspace
 
 COPY Gemfile Gemfile.lock ./
-RUN bundle lock --add-platform x86_64-linux || true
-RUN bundle config set force_ruby_platform true
 RUN bundle install
 
-COPY . .
+# node_modules は /workspace の外(= /node_modules)に置く。
+# compose.yaml のバインドマウント (.:/workspace) が /workspace/node_modules を
+# 覆い隠してしまい、grover が puppeteer を解決できなくなるため。
+# Node は /workspace/node_modules の次に /node_modules を探索する。
+COPY package.json package-lock.json /
+RUN cd / && npm ci --omit=dev --no-audit --no-fund
 
-RUN test -f package.json || npm init -y
-RUN npm install puppeteer --no-audit --no-fund
+COPY . .
 
 RUN bash -lc 'set -euo pipefail; \
   if [ "${BUILD_ASSETS}" = "1" ]; then \

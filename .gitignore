@@ -81,6 +81,7 @@ config/master.key
 .env
 .env*.local
 .env*
+!.env.example
 
 ## Environment normalization:
 /.bundle
@@ -205,7 +206,6 @@ $RECYCLE.BIN/
 *.seed
 *.bak
 *.swp
-.dockerignore
 
 # VS Code
 .vscode/*

@@ -2,6 +2,8 @@
 require "rubygems"
 require "bundler/setup"
 
-ARGV.unshift("--ensure-latest")
+# Rails 標準の binstub は --ensure-latest を付与するが、brakeman が新しくリリース
+# されるたびに(コード変更と無関係に)CI が失敗するため外している。
+# バージョンの追随は dependabot に任せる。
 
 load Gem.bin_path("brakeman", "brakeman")

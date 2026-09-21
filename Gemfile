@@ -15,6 +15,9 @@ gem "devise", "~> 4.9"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 gem "rake", "~> 13.3"
+# Ruby 3.4 で csv は default gem ではなくなったため明示的に宣言する
+# (app/controllers/reports/*_controller.rb の CSV エクスポートで使用)
+gem "csv"
 gem "grover"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"

@@ -1,0 +1,17 @@
+# ビルドコンテキストから除外する。
+# 特に node_modules と vendor/bundle はホスト(arm64 mac)の成果物が
+# COPY . . でコンテナ側のインストール結果を上書きするのを防ぐため必須。
+.git
+.github
+.devcontainer
+.vscode
+node_modules
+vendor/bundle
+log/*
+tmp/*
+storage/*
+spec/tmp
+test/tmp
+.env
+.env.*
+!.env.example
