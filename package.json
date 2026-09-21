@@ -1,0 +1,8 @@
+{
+  "name": "tax-assist",
+  "private": true,
+  "description": "grover (PDF 出力) が使用する puppeteer をバージョン固定するためのファイル",
+  "dependencies": {
+    "puppeteer": "^24.43.1"
+  }
+}
