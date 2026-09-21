@@ -17,6 +17,7 @@
           <th>区分</th>
           <th>サブ区分</th>
           <th>科目名</th>
+          <th>判定基準</th>
           <th class="actions-col text-right">操作</th>
         </tr>
       </thead>
@@ -27,6 +28,7 @@
               <td><%= I18n.t("accounts.categories.#{account.category}", default: account.category) %></td>
               <td><%= subs.dig(account.category.to_s, account.sub_category.to_s) || "-" %></td>
               <td><%= account.name %></td>
+              <td class="text-muted"><%= account.guidance.presence || "-" %></td>
               <td class="actions-cell nowrap">
                 <%= link_to "編集", edit_account_path(account), class: "btn btn-sm btn-inline" %>
                 <%= button_to "削除", account_path(account),
@@ -38,7 +40,7 @@
           <% end %>
         <% else %>
           <tr>
-            <td colspan="4" class="text-center text-muted">登録された勘定科目はありません</td>
+            <td colspan="5" class="text-center text-muted">登録された勘定科目はありません</td>
           </tr>
         <% end %>
       </tbody>
