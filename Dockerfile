@@ -1,4 +1,4 @@
-FROM ruby:3.3.12-slim-trixie
+FROM ruby:3.4.10-slim-trixie
 
 ENV LANG=C.UTF-8 \
     BUNDLE_PATH=/usr/local/bundle \
