@@ -1,12 +1,13 @@
 name: Gemini PR Review
 
-# 無料枠(Gemini API の Free tier)で運用するため、レビューの実行契機を絞っている。
-# push のたびには走らせず、PR を開いた時と再オープンした時のみ。
+# Gemini API の無料枠は 1 日あたりのリクエスト数が少ない(2026-09 時点で
+# gemini-3.5-flash は 20 リクエスト/日)。1 レビューで複数リクエストを消費するため、
+# push のたびには走らせず PR の開始時のみに絞っている。
 # 途中でもう一度レビューさせたい場合は PR を Close -> Reopen するか、
 # Actions タブから workflow_dispatch で PR 番号を指定して実行する。
 on:
   pull_request:
-    types: [ opened, reopened ]
+    types: [ opened, reopened, ready_for_review ]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -20,6 +21,9 @@ concurrency:
 
 jobs:
   review:
+    # レビューはあくまで補助なので、クォータ超過や API 障害で失敗しても
+    # PR 全体を落とさない(CI 本体の合否とは切り離す)
+    continue-on-error: true
     # ドラフト PR はレビューしない(作業途中への指摘と無料枠の消費を避ける)
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
@@ -59,9 +63,6 @@ jobs:
           gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
           # モデルは Gemini CLI のルーティングに任せる(Flash 系が選ばれる)。
           # 固定したい場合のみ gemini_model を指定する。
-          # 投稿されない原因の切り分け用。解決したら両方とも外す
-          gemini_debug: true
-          upload_artifacts: true
           github_pr_number: '${{ github.event.pull_request.number || inputs.pr_number }}'
           workflow_name: 'gemini-review'
           settings: |-

@@ -40,7 +40,9 @@ PR の作成時に GitHub Actions 上で Gemini がコードレビューを行�
 [code-review 拡張](https://github.com/gemini-cli-extensions/code-review))
 
 - 必要な設定はシークレット `GEMINI_API_KEY` のみ（[AI Studio](https://aistudio.google.com/apikey) で発行）
-- 実行契機は PR の `opened` / `reopened` と手動実行のみ。push のたびには走りません
+- 実行契機は PR の `opened` / `reopened` / `ready_for_review` と手動実行のみ。push のたびには走りません
+- 無料枠は 1 日あたりのリクエスト数が少なく（2026-09 時点で `gemini-3.5-flash` は 20 リクエスト/日）、
+  使い切るとレビューが 429 で失敗します。CI 本体の合否には影響しません
 - レビュー観点は `.gemini/styleguide.md` に記述
 
 ## Google認証設定
