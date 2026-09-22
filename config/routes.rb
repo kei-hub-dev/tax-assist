@@ -24,7 +24,11 @@ Rails.application.routes.draw do
   end
   resource :accounting_menu, only: :show, controller: :accounting_menu
   resource :opening_balances, only: [ :show, :update ]
-  resources :journal_entries
+  resources :journal_entries do
+    collection do
+      post :suggest
+    end
+  end
   namespace :reports do
     resource :general_ledger,   only: :show, controller: :general_ledger
     resource :confirmation,     only: :show, controller: :trial_balance

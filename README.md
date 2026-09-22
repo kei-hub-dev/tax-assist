@@ -34,6 +34,49 @@ docker compose up
    - AI実装(LLM構築後に実装予定)
    - オートコンプリート
 
+## AI による仕訳提案
+摘要から借方・貸方の勘定科目を提案します。推論には [Ollama](https://ollama.com/) を使います。
+接続先は自由に指定でき、同じマシン・LAN 内の別マシン・リモートのサーバのいずれでも構いません。
+
+### 準備
+1. Ollama を用意する（手元で動かす場合は [インストール](https://ollama.com/) して起動）
+2. モデルを取得する（既定のモデルは約 17GB）
+   ```sh
+   ollama pull qwen3.8:27b-q4_K_M
+   ```
+3. `.env` に接続先を設定する
+   ```sh
+   # 同じマシンの Ollama に繋ぐ場合 (Docker Desktop for Mac / Windows)
+   OLLAMA_URL=http://host.docker.internal:11434
+
+   # LAN 内の別マシンやリモートのサーバに繋ぐ場合
+   OLLAMA_URL=https://ollama.example.com
+   OLLAMA_API_KEY=...   # 認証が必要なら設定 (Authorization: Bearer で送信)
+   ```
+
+### 接続先ごとの注意
+| 接続先 | 注意点 |
+| --- | --- |
+| 同じマシン (macOS / Windows) | Ollama 側の設定変更は不要。`host.docker.internal` からホストのループバックへ転送される |
+| 同じマシン (Linux) | `host-gateway` が docker0 ブリッジの IP に解決されるため、`OLLAMA_HOST=0.0.0.0` が必要 |
+| LAN 内の別マシン | 上と同じく Ollama を `0.0.0.0` で待ち受ける必要がある |
+| リモートのサーバ | HTTPS と認証を用意すること。`OLLAMA_API_KEY` で Bearer トークンを付与できる |
+
+Ollama を `0.0.0.0` で公開すると、同一ネットワーク上の他端末からも到達できるようになります。
+
+⚠️ **帳簿データは `OLLAMA_URL` で指定した宛先に送信されます。** 摘要と勘定科目に加え、
+過去の仕訳が最大 40 件プロンプトに含まれます。自分で管理していない Ollama を指定しないでください。
+
+### 動作
+- `OLLAMA_URL` を設定したときだけ有効になります。
+  未設定ならボタン自体が表示されず、アプリは従来どおり動作します
+- 判断の優先順位は **勘定科目の判定基準 → 一般的な会計知識 → 過去の仕訳** です。
+  過去の仕訳が判定基準と食い違う場合は、正しい科目を提案したうえで警告を表示します
+- 提案はフォームに入力されるだけで、保存はされません。内容を確認してから保存してください
+- モデルは `OLLAMA_MODEL`（既定 `qwen3.8:27b-q4_K_M`）、待ち時間の上限は `OLLAMA_TIMEOUT`（既定 60 秒）で変更できます
+
+※提案は参考情報です。最終的な判断はご自身の責任で行ってください。
+
 ## コードレビュー
 PR の作成時に GitHub Actions 上で Gemini がコードレビューを行います。
 ([run-gemini-cli](https://github.com/google-github-actions/run-gemini-cli) +
