@@ -1,0 +1,254 @@
+name: Gemini PR Summary
+
+# PR の変更内容を Gemini に要約させ、PR 本文に書き込む。
+#
+# コードレビュー (gemini-review.yml) はモデルとの往復が多く、無料枠
+# (2026-09 時点で gemini-3.5-flash は 20 リクエスト/日) をすぐ使い切るため、
+# こちらはツールも MCP サーバーも使わずモデルへのリクエストを 1 回に抑えている。
+# push のたびに走らせても枠を圧迫しにくい。
+#
+# push のたびにサマリーを作り直し、本文のマーカーで挟んだ範囲だけを差し替える。
+# PR 全体の要約なので、中身が変わったら作り直さないと内容が古くなる。
+# マーカーの外に手で書いた本文はそのまま残る。
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+concurrency:
+  # 連続 push でひとつの PR に何度も走らせない
+  group: 'gemini-summary-${{ github.event.pull_request.number }}'
+  cancel-in-progress: true
+
+jobs:
+  summary:
+    # ドラフト PR では無料枠を使わない
+    if: ${{ github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      # checkout はしない。PR の情報も差分も gh 経由で取れるため、
+      # ワークスペースを用意するより速く、モデルに渡す入力も明示的になる。
+      - name: PR の情報と差分を集める
+        id: prep
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GH_REPO: '${{ github.repository }}'
+          PR_NUMBER: '${{ github.event.pull_request.number }}'
+          # 差分が巨大な PR でプロンプトが膨らみすぎないよう頭打ちにする
+          MAX_DIFF_BYTES: '100000'
+        run: |
+          set -euo pipefail
+
+          DIFF_FILE="$(mktemp)"
+          gh pr diff "${PR_NUMBER}" > "${DIFF_FILE}"
+
+          # 差分が無い push (マージコミットだけ、など) では無料枠を使わない
+          if [ ! -s "${DIFF_FILE}" ]; then
+            echo "skip=true" >> "${GITHUB_OUTPUT}"
+            echo "差分が空のためスキップしました。" >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+          echo "skip=false" >> "${GITHUB_OUTPUT}"
+
+          if [ "$(wc -c < "${DIFF_FILE}")" -gt "${MAX_DIFF_BYTES}" ]; then
+            TRIMMED="$(mktemp)"
+            head -c "${MAX_DIFF_BYTES}" "${DIFF_FILE}" > "${TRIMMED}"
+            printf '\n(差分が大きいため、ここで打ち切っています)\n' >> "${TRIMMED}"
+            mv "${TRIMMED}" "${DIFF_FILE}"
+            echo "::notice title=差分の打ち切り::差分が ${MAX_DIFF_BYTES} バイトを超えたため、先頭のみをモデルに渡しました。"
+          fi
+
+          # 差分中の行と衝突しないデリミタを使う
+          DELIM="GEMINI_DIFF_$(openssl rand -hex 8)"
+          {
+            echo "pr_diff<<${DELIM}"
+            cat "${DIFF_FILE}"
+            echo "${DELIM}"
+          } >> "${GITHUB_OUTPUT}"
+
+          DELIM="GEMINI_FILES_$(openssl rand -hex 8)"
+          {
+            echo "pr_files<<${DELIM}"
+            gh pr diff "${PR_NUMBER}" --name-only
+            echo "${DELIM}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Gemini でサマリーを生成
+        id: gemini
+        if: ${{ steps.prep.outputs.skip == 'false' }}
+        # ここでは失敗させず、次のステップで失敗理由を判定して出し分ける
+        continue-on-error: true
+        uses: google-github-actions/run-gemini-cli@v0
+        env:
+          GEMINI_API_KEY: '${{ secrets.GEMINI_API_KEY }}'
+        with:
+          gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
+          settings: |-
+            {
+              "model": {
+                "maxSessionTurns": 1
+              },
+              "tools": {
+                "core": []
+              }
+            }
+          # ツールを一切与えず、差分をプロンプトに載せて 1 往復で終わらせる。
+          # 出力はそのまま PR 本文に貼るため、前置きを書かせない。
+          prompt: |-
+            あなたはこのリポジトリのコードを読み慣れた開発者です。
+            以下の Pull Request の変更内容を読み、PR 本文に載せる概要を日本語で書いてください。
+
+            # 出力の決まり
+
+            - Markdown だけを出力してください。あいさつ・前置き・補足説明は書かないでください
+            - 全体をコードブロックで囲まないでください
+            - 以下の形式を厳密に守ってください
+
+            ## 📋 Summary
+
+            この PR が何をするものかを 2〜3 文で書く。
+
+            ### 主な変更
+
+            - 変更をファイルまたは機能の単位で 3〜6 項目の箇条書きにする
+            - 各項目は「何を変えたか」が一行で分かるように書く
+            - ファイル名や識別子は原文のまま `バッククォート` で囲む
+
+            # 対象の Pull Request
+
+            タイトル: ${{ github.event.pull_request.title }}
+
+            変更ファイル:
+            ${{ steps.prep.outputs.pr_files }}
+
+            # 差分
+
+            ${{ steps.prep.outputs.pr_diff }}
+
+      - name: PR 本文へ反映
+        if: ${{ always() && steps.prep.outputs.skip == 'false' }}
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GH_REPO: '${{ github.repository }}'
+          PR_NUMBER: '${{ github.event.pull_request.number }}'
+          OUTCOME: '${{ steps.gemini.outcome }}'
+          GEMINI_SUMMARY: '${{ steps.gemini.outputs.summary }}'
+          GEMINI_ERROR: '${{ steps.gemini.outputs.error }}'
+        run: |
+          set -uo pipefail
+
+          if [ "${OUTCOME}" != "success" ]; then
+            # 429 / クォータ超過は「使い切った」だけなので PR を落とさない
+            if printf '%s' "${GEMINI_ERROR}" | grep -qiE '429|quota|RESOURCE_EXHAUSTED|exhausted'; then
+              echo "::warning title=Gemini のクォータ超過::Gemini API の 1 日あたりのリクエスト上限を使い切ったため、サマリーを生成できませんでした。"
+              {
+                echo "## サマリーの生成をスキップしました"
+                echo
+                echo "**理由: Gemini API のクォータ超過 (429)**"
+                echo
+                echo "PR 本文は変更していません。次の push で再度生成されます。"
+              } >> "${GITHUB_STEP_SUMMARY}"
+              exit 0
+            fi
+
+            echo "::error title=サマリー生成の失敗::クォータ超過以外の理由で失敗しました。ログを確認してください。"
+            {
+              echo "## サマリーの生成が失敗しました"
+              echo
+              echo '```'
+              printf '%s\n' "${GEMINI_ERROR}"
+              echo '```'
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 1
+          fi
+
+          SUMMARY_FILE="$(mktemp)"
+          printf '%s\n' "${GEMINI_SUMMARY}" > "${SUMMARY_FILE}"
+
+          # モデルが前置きを書いたりコードブロックで囲んだ場合に備えて、
+          # 見出し行より前を捨て、囲みのフェンスを落とす
+          if grep -qE '^#{1,3} .*Summary' "${SUMMARY_FILE}"; then
+            sed -n '/^#\{1,3\} .*Summary/,$p' "${SUMMARY_FILE}" > "${SUMMARY_FILE}.cut"
+            mv "${SUMMARY_FILE}.cut" "${SUMMARY_FILE}"
+          fi
+          # 本文中のコードブロックは残したいので、落とすのは囲みの 2 行だけにする
+          if head -1 "${SUMMARY_FILE}" | grep -qE '^[[:space:]]*```'; then
+            sed -i '1d' "${SUMMARY_FILE}"
+          fi
+          if tail -1 "${SUMMARY_FILE}" | grep -qE '^[[:space:]]*```[[:space:]]*$'; then
+            sed -i '$d' "${SUMMARY_FILE}"
+          fi
+
+          # printf は空文字でも改行を書くので、サイズではなく中身で判定する。
+          # ここで取りこぼすとマーカーだけが本文に残り、以後ずっとスキップされてしまう。
+          if ! grep -q '[^[:space:]]' "${SUMMARY_FILE}"; then
+            echo "::warning title=サマリーが空::モデルの応答が空だったため、PR 本文は変更しませんでした。"
+            {
+              echo "## サマリーが空でした"
+              echo
+              echo "モデルの応答が空だったため、PR 本文は変更していません。次の push で再度生成されます。"
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          START='<!-- gemini-summary:start -->'
+          END='<!-- gemini-summary:end -->'
+
+          CURRENT_FILE="$(mktemp)"
+          gh pr view "${PR_NUMBER}" --json body --jq '.body // ""' > "${CURRENT_FILE}"
+
+          BODY_FILE="$(mktemp)"
+          if grep -qF "${START}" "${CURRENT_FILE}" && grep -qF "${END}" "${CURRENT_FILE}"; then
+            # すでにサマリーがある: マーカーで挟んだ範囲だけを差し替え、
+            # その外に手で書かれた本文には触れない
+            ACTION='更新しました'
+            awk -v s="${START}" -v e="${END}" -v f="${SUMMARY_FILE}" '
+              index($0, s) {
+                inblock = 1
+                print s
+                while ((getline line < f) > 0) { print line }
+                close(f)
+                print e
+                next
+              }
+              index($0, e) { inblock = 0; next }
+              inblock { next }
+              { print }
+            ' "${CURRENT_FILE}" > "${BODY_FILE}"
+          else
+            # 初回: 手で書いた本文を残し、その下にサマリーを足す
+            ACTION='書き込みました'
+            # gh は本文が空でも改行を 1 つ返すので、中身で判定する
+            if grep -q '[^[:space:]]' "${CURRENT_FILE}"; then
+              # 末尾の空行を落としてから区切りを入れる
+              awk '{ l[NR] = $0 }
+                   END { last = NR
+                         while (last > 0 && l[last] ~ /^[[:space:]]*$/) { last-- }
+                         for (i = 1; i <= last; i++) { print l[i] } }' \
+                "${CURRENT_FILE}" >> "${BODY_FILE}"
+              printf '\n---\n\n' >> "${BODY_FILE}"
+            fi
+            {
+              echo "${START}"
+              cat "${SUMMARY_FILE}"
+              echo "${END}"
+            } >> "${BODY_FILE}"
+          fi
+
+          # 中身が変わっていなければ PR を触らない
+          if diff -q "${CURRENT_FILE}" "${BODY_FILE}" >/dev/null 2>&1; then
+            echo "サマリーに変化がなかったため、PR 本文は更新していません。" >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          gh pr edit "${PR_NUMBER}" --body-file "${BODY_FILE}"
+
+          {
+            echo "## PR 本文のサマリーを${ACTION}"
+            echo
+            cat "${SUMMARY_FILE}"
+          } >> "${GITHUB_STEP_SUMMARY}"
